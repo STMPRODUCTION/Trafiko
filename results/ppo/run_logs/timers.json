@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1752607286",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "X:\\PROJECTS\\Traffiko\\venv\\Scripts\\mlagents-learn --torch-device cuda",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.7.1+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1752607350"
+    },
+    "total": 64.62605729999996,
+    "count": 1,
+    "self": 0.004635300003428711,
+    "children": {
+        "run_training.setup": {
+            "total": 0.11390919999757898,
+            "count": 1,
+            "self": 0.11390919999757898
+        },
+        "TrainerController.start_learning": {
+            "total": 64.50751279999895,
+            "count": 1,
+            "self": 0.0003446000009716954,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 64.50714470000094,
+                    "count": 1,
+                    "self": 64.50714470000094
+                },
+                "TrainerController._save_models": {
+                    "total": 2.3499997041653842e-05,
+                    "count": 1,
+                    "self": 2.3499997041653842e-05
+                }
+            }
+        }
+    }
+}

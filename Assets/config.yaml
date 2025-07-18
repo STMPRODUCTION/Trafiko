@@ -1,0 +1,12 @@
+behaviors:
+  TrafficLightBrain:
+    trainer_type: ppo
+    hyperparameters:
+      learning_rate: 3.0e-4
+      batch_size: 128
+      buffer_size: 2048
+    network_settings:
+      hidden_units: 256
+    max_steps: 800000
+    checkpoint_interval: 500
+    summary_freq: 500

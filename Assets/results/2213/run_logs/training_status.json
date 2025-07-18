@@ -1,0 +1,56 @@
+{
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cpu"
+    },
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\2213\\TrafficLightBrain\\TrafficLightBrain-0.onnx",
+                "reward": null,
+                "creation_time": 1752779805.4633577,
+                "auxillary_file_paths": [
+                    "results\\2213\\TrafficLightBrain\\TrafficLightBrain-0.pt"
+                ]
+            },
+            {
+                "steps": 438,
+                "file_path": "results\\2213\\TrafficLightBrain\\TrafficLightBrain-438.onnx",
+                "reward": -20.39033269882202,
+                "creation_time": 1752779888.089137,
+                "auxillary_file_paths": [
+                    "results\\2213\\TrafficLightBrain\\TrafficLightBrain-438.pt"
+                ]
+            },
+            {
+                "steps": 867,
+                "file_path": "results\\2213\\TrafficLightBrain\\TrafficLightBrain-867.onnx",
+                "reward": -40.44487385316329,
+                "creation_time": 1752779933.6153407,
+                "auxillary_file_paths": [
+                    "results\\2213\\TrafficLightBrain\\TrafficLightBrain-867.pt"
+                ]
+            },
+            {
+                "steps": 957,
+                "file_path": "results\\2213\\TrafficLightBrain\\TrafficLightBrain-957.onnx",
+                "reward": -10.199999713897705,
+                "creation_time": 1752781491.5091429,
+                "auxillary_file_paths": [
+                    "results\\2213\\TrafficLightBrain\\TrafficLightBrain-957.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 957,
+            "file_path": "results\\2213\\TrafficLightBrain.onnx",
+            "reward": -10.199999713897705,
+            "creation_time": 1752781491.5091429,
+            "auxillary_file_paths": [
+                "results\\2213\\TrafficLightBrain\\TrafficLightBrain-957.pt"
+            ]
+        }
+    }
+}

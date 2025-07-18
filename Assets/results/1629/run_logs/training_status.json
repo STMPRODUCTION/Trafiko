@@ -1,0 +1,47 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 2309,
+                "file_path": "results\\1629\\TrafficLightBrain\\TrafficLightBrain-2309.onnx",
+                "reward": -133.35209170254794,
+                "creation_time": 1752759586.035982,
+                "auxillary_file_paths": [
+                    "results\\1629\\TrafficLightBrain\\TrafficLightBrain-2309.pt"
+                ]
+            },
+            {
+                "steps": 5100,
+                "file_path": "results\\1629\\TrafficLightBrain\\TrafficLightBrain-5100.onnx",
+                "reward": -43.33360792461195,
+                "creation_time": 1752760379.3891735,
+                "auxillary_file_paths": [
+                    "results\\1629\\TrafficLightBrain\\TrafficLightBrain-5100.pt"
+                ]
+            },
+            {
+                "steps": 10174,
+                "file_path": "results\\1629\\TrafficLightBrain\\TrafficLightBrain-10174.onnx",
+                "reward": -119.98948744476819,
+                "creation_time": 1752761482.3582757,
+                "auxillary_file_paths": [
+                    "results\\1629\\TrafficLightBrain\\TrafficLightBrain-10174.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10174,
+            "file_path": "results\\1629\\TrafficLightBrain.onnx",
+            "reward": -119.98948744476819,
+            "creation_time": 1752761482.3582757,
+            "auxillary_file_paths": [
+                "results\\1629\\TrafficLightBrain\\TrafficLightBrain-10174.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cpu"
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 256,
+                "file_path": "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-256.onnx",
+                "reward": null,
+                "creation_time": 1752746320.7254882,
+                "auxillary_file_paths": [
+                    "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-256.pt"
+                ]
+            },
+            {
+                "steps": 704,
+                "file_path": "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-704.onnx",
+                "reward": null,
+                "creation_time": 1752746555.2213404,
+                "auxillary_file_paths": [
+                    "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-704.pt"
+                ]
+            },
+            {
+                "steps": 842,
+                "file_path": "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-842.onnx",
+                "reward": -678.9223581949869,
+                "creation_time": 1752746691.3715644,
+                "auxillary_file_paths": [
+                    "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-842.pt"
+                ]
+            },
+            {
+                "steps": 1072,
+                "file_path": "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-1072.onnx",
+                "reward": -3569.0625122070314,
+                "creation_time": 1752747343.4926724,
+                "auxillary_file_paths": [
+                    "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-1072.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1072,
+            "file_path": "results\\traffic-control\\TrafficLightBrain.onnx",
+            "reward": -3569.0625122070314,
+            "creation_time": 1752747343.4926724,
+            "auxillary_file_paths": [
+                "results\\traffic-control\\TrafficLightBrain\\TrafficLightBrain-1072.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cpu"
+    }
+}

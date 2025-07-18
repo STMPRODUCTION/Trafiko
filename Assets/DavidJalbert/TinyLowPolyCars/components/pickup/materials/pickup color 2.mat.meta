@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7acd2e3451c49fa499ec08ddcb22abc3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180034
+  packageName: Tiny Low Poly Cars
+  packageVersion: 1.0
+  assetPath: Assets/DavidJalbert/TinyLowPolyCars/components/pickup/materials/pickup
+    color 2.mat
+  uploadId: 392380

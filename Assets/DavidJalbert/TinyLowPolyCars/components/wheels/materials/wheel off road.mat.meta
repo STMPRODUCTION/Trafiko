@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6d0defa686fb5104496f7e2bbf295cf2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180034
+  packageName: Tiny Low Poly Cars
+  packageVersion: 1.0
+  assetPath: Assets/DavidJalbert/TinyLowPolyCars/components/wheels/materials/wheel
+    off road.mat
+  uploadId: 392380

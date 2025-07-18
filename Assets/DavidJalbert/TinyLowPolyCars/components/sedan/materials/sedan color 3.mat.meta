@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6984a694826714942829b8826b997968
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 180034
+  packageName: Tiny Low Poly Cars
+  packageVersion: 1.0
+  assetPath: Assets/DavidJalbert/TinyLowPolyCars/components/sedan/materials/sedan
+    color 3.mat
+  uploadId: 392380
