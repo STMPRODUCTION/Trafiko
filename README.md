@@ -19,7 +19,7 @@ The system is designed with scalability in mind: future versions can support mul
 - **ML-Agents Toolkit** – Reinforcement Learning framework by Unity  
 - **Python** – Backend for model training and reward processing  
 - **Proximal Policy Optimization (PPO)** – The main algorithm used for training  
-- **TensorFlow / PyTorch** – Depending on ML-Agents backend  
+- **PyTorch** – The backbone for training  
 - **C#** – For Unity-specific logic and integration  
 
 ---
