@@ -4,7 +4,7 @@ Trafiko is an intelligent traffic light control system built in Unity, using **R
 
 ---
 ![Trafiko Demo](Untiteled.gif)
----
+
 
 ## 🧠 Description (EN)
 
@@ -13,8 +13,6 @@ Trafiko simulates vehicle traffic in a virtual environment with cars generated b
 The system is designed with scalability in mind: future versions can support multiple communicating intersections, making it a viable solution for **smart city** infrastructure.
 
 ---
-
-
 ## 🛠️ Technologies Used
 
 - **Unity** – Simulation environment and traffic visualization  
