@@ -3,6 +3,8 @@
 Trafiko is an intelligent traffic light control system built in Unity, using **Reinforcement Learning (RL)** to train an agent that optimizes traffic flow at road intersections. The AI agent learns how to manage traffic light cycles in real-time based on dynamic traffic conditions, aiming to reduce waiting times, avoid congestion, and minimize emissions caused by vehicle idling.
 
 ---
+![Trafiko Demo](Untiteled.gif)
+---
 
 ## 🧠 Description (EN)
 
@@ -11,6 +13,7 @@ Trafiko simulates vehicle traffic in a virtual environment with cars generated b
 The system is designed with scalability in mind: future versions can support multiple communicating intersections, making it a viable solution for **smart city** infrastructure.
 
 ---
+
 
 ## 🛠️ Technologies Used
 
@@ -26,6 +29,8 @@ The system is designed with scalability in mind: future versions can support mul
 ## 📘 About Reinforcement Learning & PPO
 
 ### What is Reinforcement Learning?
+
+![Neural Network](nn.gif)
 
 Reinforcement Learning is a machine learning paradigm where an **agent** interacts with an **environment**, taking actions to maximize cumulative **reward**. In Trafiko's case, the agent controls traffic lights and receives rewards based on improved traffic flow, minimized wait times, and reduced congestion.
 
