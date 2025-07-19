@@ -8,5 +8,5 @@ behaviors:
     network_settings:
       hidden_units: 256
     max_steps: 800000
-    checkpoint_interval: 500
-    summary_freq: 500
+    checkpoint_interval: 10000
+    summary_freq: 1500

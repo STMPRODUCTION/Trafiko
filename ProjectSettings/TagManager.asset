@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Car
   - IntersectionTrigger
+  - IntersectionTriggerN
+  - IntersectionTriggerS
+  - IntersectionTriggerE
+  - IntersectionTriggerV
   layers:
   - Default
   - TransparentFX

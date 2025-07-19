@@ -209,21 +209,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0be0428d2518e8b4595409b6d0bbbd34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 7
-  maxSpeed: 30
-  stopDistanceToLight: 3
-  stopDistanceToCar: 2
-  decelerationDistance: 15
+  acceleration: 5
+  maxSpeed: 20
+  stopDistanceToLight: 5
+  stopDistanceToCar: 4
+  decelerationDistance: 17
+  angerGrowthRate: 0.2
+  angerLogInterval: 2
+  waitTimeThreshold: 1
   targetLight: {fileID: 0}
   currentSpeed: 0
   ray_Y_Origin: 0
-  deceleration: 4
+  deceleration: 20
   laneID: 
   avgSpeed: 0
   distanceToTrafficLight: 6
   spawnTime: 0
   timeTaken: 0
   statsLogger: {fileID: 0}
+  carLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  lightCheckInterval: 0.05
+  carDetectionInterval: 0.03
 --- !u!54 &-7991452868943202618
 Rigidbody:
   m_ObjectHideFlags: 0

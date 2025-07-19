@@ -9,6 +9,11 @@ public class CarController : MonoBehaviour
     public float stopDistanceToCar = 5f;
     public float decelerationDistance = 10f;
 
+    [Header("Anger System")]
+    public float angerGrowthRate = 0.5f; // Base exponential growth rate
+    public float angerLogInterval = 2f; // Log anger every 2 seconds
+    public float waitTimeThreshold = 1f; // Minimum wait time before anger starts growing
+    
     public TrafficLight targetLight;
     public float currentSpeed = 0f;
     public float ray_Y_Origin = 0f;
@@ -34,6 +39,14 @@ public class CarController : MonoBehaviour
     private bool accidentReported = false;
     private bool hasPassedLight = false;
     private bool isDestroyed = false;
+    private bool hasEnteredIntersection = false; // New flag for intersection tracking
+
+    // Anger system variables
+    private float angerScore = 0f;
+    private float waitStartTime = 0f;
+    private bool isWaiting = false;
+    private float angerLogTimer = 0f;
+    private float totalWaitTime = 0f;
 
     // Cached calculations
     private float lastLightDistance = float.MaxValue;
@@ -64,11 +77,12 @@ public class CarController : MonoBehaviour
         // Initialize timers with random offset to spread load
         lightCheckTimer = Random.Range(0f, lightCheckInterval);
         carDetectionTimer = Random.Range(0f, carDetectionInterval);
+        angerLogTimer = Random.Range(0f, angerLogInterval); // Spread anger logging too
     }
 
     void Update()
     {
-        if (isDestroyed) return;
+        //if (isDestroyed) return;
 
         // Cache deltaTime to avoid multiple calls
         float deltaTime = Time.deltaTime;
@@ -108,8 +122,56 @@ public class CarController : MonoBehaviour
             brakeFactor = Mathf.Max(brakeFactor, cachedCarBrakeFactor);
         }
 
+        // 😠 Update anger system
+        UpdateAngerSystem(hardStop || currentSpeed < slowestAllowedSpeed, deltaTime);
+
         // 🚦 Final movement
         UpdateMovement(brakeFactor, hardStop, deltaTime);
+    }
+
+    void UpdateAngerSystem(bool isCurrentlyWaiting, float deltaTime)
+    {
+        // Start waiting if we're stopped/slow and weren't waiting before
+        if (isCurrentlyWaiting && !isWaiting)
+        {
+            isWaiting = true;
+            waitStartTime = Time.time;
+        }
+        // Stop waiting if we're moving and were waiting before
+        else if (!isCurrentlyWaiting && isWaiting)
+        {
+            isWaiting = false;
+            totalWaitTime += Time.time - waitStartTime;
+        }
+
+        // Update anger score if we're waiting
+        if (isWaiting)
+        {
+            float currentWaitTime = Time.time - waitStartTime;
+            if (currentWaitTime > waitTimeThreshold)
+            {
+                // Exponential growth: anger = base * e^(rate * waitTime)
+                float waitTimeForAnger = currentWaitTime - waitTimeThreshold;
+                angerScore = Mathf.Exp(angerGrowthRate * waitTimeForAnger) - 1f;
+            }
+        }
+
+        // Log anger data periodically
+        angerLogTimer -= deltaTime;
+        if (angerLogTimer <= 0f)
+        {
+            angerLogTimer = angerLogInterval;
+            LogAngerData();
+        }
+    }
+
+    void LogAngerData()
+    {
+        if (statsLogger != null)
+        {
+            float currentWaitTime = isWaiting ? (Time.time - waitStartTime) : 0f;
+            statsLogger.ReportAngerData(laneID, angerScore, totalWaitTime + currentWaitTime);
+        }
     }
 
     void CheckTrafficLight(out float lightBrakeFactor, out bool lightHardStop)
@@ -127,6 +189,13 @@ public class CarController : MonoBehaviour
         lastLightDistance = distanceToLight;
         lastLightState = targetLight.isGreen;
         isNearLight = distanceToLight <= decelerationDistance;
+
+        // Report entering intersection when moving forward toward light and close enough
+        if (forwardDot < 0.0f && !hasEnteredIntersection && distanceToLight <= stopDistanceToLight)
+        {
+            hasEnteredIntersection = true;
+            statsLogger?.ReportCarEnterIntersection(laneID);
+        }
 
         if (forwardDot > 0.1f && !targetLight.isGreen)
         {
@@ -206,17 +275,24 @@ public class CarController : MonoBehaviour
     {
         if (isDestroyed) return;
 
-        if (!hasPassedLight && other.CompareTag("IntersectionTrigger"))
+        if (!hasPassedLight && other.CompareTag($"IntersectionTrigger{laneID}"))
         {
             hasPassedLight = true;
 
             float timeTaken = Time.time - spawnTime;
             avgSpeed = distanceToTrafficLight / timeTaken;
 
+            // Final anger data log before destruction
+            LogAngerData();
+
             statsLogger?.ReportCar(timeTaken, laneID, avgSpeed);
             statsLogger?.ReportCarDestroyed(laneID);
+            if (hasEnteredIntersection)
+            {
+                statsLogger?.ReportCarExitIntersection(laneID);
+            }
 
-            DestroyCar(0.1f);
+            DestroyCar(5f);
         }
         else if (other.CompareTag("Car") && !accidentReported)
         {
@@ -225,6 +301,10 @@ public class CarController : MonoBehaviour
             {
                 accidentReported = true;
                 currentSpeed = 0f;
+                
+                // Log final anger data for accident
+                LogAngerData();
+                
                 statsLogger?.ReportAccident(this.laneID);
                 DestroyCar(5f);
             }
@@ -251,7 +331,21 @@ public class CarController : MonoBehaviour
     {
         if (gameObject != null)
         {
+            
             Destroy(gameObject);
         }
+    }
+
+    // Public getter for anger score (useful for debugging or UI)
+    public float GetAngerScore()
+    {
+        return angerScore;
+    }
+
+    // Public getter for total wait time (useful for debugging or UI)
+    public float GetTotalWaitTime()
+    {
+        float currentWaitTime = isWaiting ? (Time.time - waitStartTime) : 0f;
+        return totalWaitTime + currentWaitTime;
     }
 }

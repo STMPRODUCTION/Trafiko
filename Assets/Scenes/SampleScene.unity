@@ -307,12 +307,31 @@ MonoBehaviour:
   lightS: {fileID: 1735583057}
   lightE: {fileID: 2048226366}
   lightV: {fileID: 1874164983}
-  spawnInterval: 0.5
+  baseSpawnInterval: 0.5
+  minSpawnInterval: 0.05
+  maxSpawnInterval: 2
+  maxEpisodeLength: 90
+  timeMultiplier: 1
+  morningRushStart: 0.106
+  morningRushEnd: 0.35
+  afternoonRushStart: 0.675
+  afternoonRushEnd: 0.89
+  rushHourMultiplier: 5
+  enableWaveSpawning: 1
+  carsPerWave: 30
+  carSpawnDelay: 0.05
+  waveGapDuration: 2
+  residentialLaneIndex: 0
+  morningResidentialBias: 3
+  afternoonResidentialBias: 2.5
   minSpawnDistance: 5
+  maxSearchDistance: 30
+  carSpacing: 3
+  maxQueueLength: 10
   carLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  maxCars: 100
+  maxCars: 500
   carCountCheckInterval: 1
   statsLogger: {fileID: 30752157}
 --- !u!114 &30752157
@@ -333,7 +352,15 @@ MonoBehaviour:
   avgCarSpeed: 0
   recentAvgWaitTime: 0
   recentAvgSpeed: 0
+  accidentPenalty: 0
   carsReported: 0
+  carsInIntersection: 0
+  currentCarCount: 0
+  totalAngerScore: 0
+  avgAngerScore: 0
+  recentAvgAngerScore: 0
+  peakAngerScore: 0
+  angerReports: 0
   carsPerLaneList:
   - laneID: N
     carCount: 0
@@ -343,6 +370,27 @@ MonoBehaviour:
     carCount: 0
   - laneID: V
     carCount: 0
+  angerPerLaneList:
+  - laneID: N
+    totalAnger: 0
+    avgAnger: 0
+    peakAnger: 0
+    angerReports: 0
+  - laneID: S
+    totalAnger: 0
+    avgAnger: 0
+    peakAnger: 0
+    angerReports: 0
+  - laneID: E
+    totalAnger: 0
+    avgAnger: 0
+    peakAnger: 0
+    angerReports: 0
+  - laneID: V
+    totalAnger: 0
+    avgAnger: 0
+    peakAnger: 0
+    angerReports: 0
   simulationTimeScale: 1
 --- !u!1001 &35307516
 PrefabInstance:
@@ -3901,8 +3949,8 @@ GameObject:
   - component: {fileID: 784224935}
   - component: {fileID: 784224934}
   m_Layer: 0
-  m_Name: Cube (3)
-  m_TagString: IntersectionTrigger
+  m_Name: BorderN
+  m_TagString: IntersectionTriggerN
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3990,7 +4038,7 @@ Transform:
   m_GameObject: {fileID: 784224933}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70655715, z: -0, w: 0.707656}
-  m_LocalPosition: {x: 1.8035148, y: 0, z: -65.23005}
+  m_LocalPosition: {x: 1.8035148, y: 0, z: -15.3}
   m_LocalScale: {x: 3.2274005, y: 17.60805, z: 29.714994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5170,8 +5218,8 @@ GameObject:
   - component: {fileID: 1126863466}
   - component: {fileID: 1126863465}
   m_Layer: 0
-  m_Name: Cube (2)
-  m_TagString: IntersectionTrigger
+  m_Name: BorderS
+  m_TagString: IntersectionTriggerS
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5259,7 +5307,7 @@ Transform:
   m_GameObject: {fileID: 1126863464}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70655715, z: -0, w: 0.707656}
-  m_LocalPosition: {x: 1.5965391, y: 0, z: 67.9699}
+  m_LocalPosition: {x: 1.5965391, y: 0, z: 18.4}
   m_LocalScale: {x: 3.2274005, y: 17.60805, z: 29.714994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5956,8 +6004,8 @@ GameObject:
   - component: {fileID: 1275427589}
   - component: {fileID: 1275427588}
   m_Layer: 0
-  m_Name: Cube
-  m_TagString: IntersectionTrigger
+  m_Name: BorderE
+  m_TagString: IntersectionTriggerE
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6045,7 +6093,7 @@ Transform:
   m_GameObject: {fileID: 1275427587}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -64.9, y: 0, z: 1.37}
+  m_LocalPosition: {x: -19.02, y: 0, z: 1.37}
   m_LocalScale: {x: 3.2274, y: 17.60805, z: 29.714994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6204,9 +6252,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1275427591}
-  - {fileID: 1126863468}
   - {fileID: 784224937}
+  - {fileID: 1126863468}
+  - {fileID: 1275427591}
   - {fileID: 1416026893}
   m_Father: {fileID: 143285106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6543,8 +6591,8 @@ GameObject:
   - component: {fileID: 1416026891}
   - component: {fileID: 1416026890}
   m_Layer: 0
-  m_Name: Cube (1)
-  m_TagString: IntersectionTrigger
+  m_Name: BorderV
+  m_TagString: IntersectionTriggerV
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6632,7 +6680,7 @@ Transform:
   m_GameObject: {fileID: 1416026889}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 68.3, y: 0, z: 1.37}
+  m_LocalPosition: {x: 15.58, y: 0, z: 1.37}
   m_LocalScale: {x: 3.2274, y: 17.60805, z: 29.714994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9230,7 +9278,7 @@ MonoBehaviour:
   lightE: {fileID: 2048226366}
   lightV: {fileID: 1874164983}
   decisionInterval: 1
-  maxEpisodeTime: 160
+  maxEpisodeTime: 90
   episodeTimer: 0
   speedRewardWeight: 1
   waitPenaltyWeight: 0.5
@@ -9239,7 +9287,15 @@ MonoBehaviour:
   carPassedRewardWeight: 0.5
   unfinishedCarPenaltyWeight: 0.1
   maxInactivityTime: 20
+  angerPenaltyWeight: 0.3
+  peakAngerPenaltyWeight: 0.5
+  angerReductionRewardWeight: 0.2
+  stabilityRewardWeight: 0.1
   statsLogger: {fileID: 30752157}
+  carSpawner: {fileID: 30752156}
+  randomizeInitialLights: 1
+  randomGreenProbability: 0.5
+  preventInitialConflicts: 1
 --- !u!114 &2097227524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9253,7 +9309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 12
+    VectorObservationSize: 100
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -9262,7 +9318,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 93480e7d610200e43815990845ea789b, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 16e2f7ded2a67b243ba468eb585b2eee, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: TrafficLightBrain

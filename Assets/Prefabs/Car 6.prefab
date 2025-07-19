@@ -210,10 +210,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   acceleration: 4
-  maxSpeed: 18
+  maxSpeed: 15
   stopDistanceToLight: 6
-  stopDistanceToCar: 5
-  decelerationDistance: 17
+  stopDistanceToCar: 7
+  decelerationDistance: 23
+  angerGrowthRate: 0.3
+  angerLogInterval: 2
+  waitTimeThreshold: 1
   targetLight: {fileID: 0}
   currentSpeed: 0
   ray_Y_Origin: 0
@@ -224,6 +227,11 @@ MonoBehaviour:
   spawnTime: 0
   timeTaken: 0
   statsLogger: {fileID: 0}
+  carLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  lightCheckInterval: 0.05
+  carDetectionInterval: 0.03
 --- !u!54 &-7991452868943202618
 Rigidbody:
   m_ObjectHideFlags: 0

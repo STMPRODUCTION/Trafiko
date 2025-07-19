@@ -2,24 +2,6 @@
     "TrafficLightBrain": {
         "checkpoints": [
             {
-                "steps": 520961,
-                "file_path": "results\\1719\\TrafficLightBrain\\TrafficLightBrain-520961.onnx",
-                "reward": 150.82015800476074,
-                "creation_time": 1752819191.8048863,
-                "auxillary_file_paths": [
-                    "results\\1719\\TrafficLightBrain\\TrafficLightBrain-520961.pt"
-                ]
-            },
-            {
-                "steps": 521481,
-                "file_path": "results\\1719\\TrafficLightBrain\\TrafficLightBrain-521481.onnx",
-                "reward": 90.91005379813058,
-                "creation_time": 1752819239.8361104,
-                "auxillary_file_paths": [
-                    "results\\1719\\TrafficLightBrain\\TrafficLightBrain-521481.pt"
-                ]
-            },
-            {
                 "steps": 521996,
                 "file_path": "results\\1719\\TrafficLightBrain\\TrafficLightBrain-521996.onnx",
                 "reward": 75.56137450536092,
@@ -45,13 +27,31 @@
                 "auxillary_file_paths": [
                     "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.pt"
                 ]
+            },
+            {
+                "steps": 522674,
+                "file_path": "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.onnx",
+                "reward": null,
+                "creation_time": 1752856524.696275,
+                "auxillary_file_paths": [
+                    "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.pt"
+                ]
+            },
+            {
+                "steps": 522674,
+                "file_path": "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.onnx",
+                "reward": null,
+                "creation_time": 1752856773.85242,
+                "auxillary_file_paths": [
+                    "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.pt"
+                ]
             }
         ],
         "final_checkpoint": {
             "steps": 522674,
             "file_path": "results\\1719\\TrafficLightBrain.onnx",
-            "reward": 88.99204921722412,
-            "creation_time": 1752819450.3841145,
+            "reward": null,
+            "creation_time": 1752856773.85242,
             "auxillary_file_paths": [
                 "results\\1719\\TrafficLightBrain\\TrafficLightBrain-522674.pt"
             ]
