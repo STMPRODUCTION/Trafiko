@@ -192,13 +192,13 @@ MonoBehaviour:
   episodeTimer: 0
   speedRewardWeight: 0.4
   waitPenaltyWeight: 0.2
-  conflictPenaltyWeight: 2.5
+  conflictPenaltyWeight: 1
   congestionPenaltyWeight: 0.3
-  carPassedRewardWeight: 0.45
+  carPassedRewardWeight: 0.5
   unfinishedCarPenaltyWeight: 0.1
   maxInactivityTime: 25
-  angerPenaltyWeight: 0.1
-  peakAngerPenaltyWeight: 0.1
+  angerPenaltyWeight: 0.08
+  peakAngerPenaltyWeight: 0
   angerReductionRewardWeight: 0.4
   stabilityRewardWeight: 0.3
   statsLogger: {fileID: 1250759054}
@@ -1004,22 +1004,22 @@ MonoBehaviour:
   lightE: {fileID: 892703143}
   lightV: {fileID: 1134822624}
   baseSpawnInterval: 0.5
-  minSpawnInterval: 0.05
+  minSpawnInterval: 0.1
   maxSpawnInterval: 2
-  maxEpisodeLength: 90
+  maxEpisodeLength: 120
   timeMultiplier: 1
-  morningRushStart: 0.106
-  morningRushEnd: 0.35
-  afternoonRushStart: 0.675
-  afternoonRushEnd: 0.89
-  rushHourMultiplier: 5
+  morningRushStart: 0.047
+  morningRushEnd: 0.227
+  afternoonRushStart: 0.631
+  afternoonRushEnd: 0.812
+  rushHourMultiplier: 3
   enableWaveSpawning: 1
   carsPerWave: 30
-  carSpawnDelay: 0.05
-  waveGapDuration: 2
+  carSpawnDelay: 0.1
+  waveGapDuration: 3
   residentialLaneIndex: 0
-  morningResidentialBias: 3
-  afternoonResidentialBias: 2.5
+  morningResidentialBias: 2
+  afternoonResidentialBias: 2
   minSpawnDistance: 5
   maxSearchDistance: 30
   carSpacing: 3

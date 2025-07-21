@@ -2,58 +2,58 @@
     "TrafficLightBrain": {
         "checkpoints": [
             {
-                "steps": 349969,
-                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-349969.onnx",
-                "reward": 78.68490187327068,
-                "creation_time": 1752909472.944973,
+                "steps": 519985,
+                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-519985.onnx",
+                "reward": -15.229421727797565,
+                "creation_time": 1752942254.7208722,
                 "auxillary_file_paths": [
-                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-349969.pt"
+                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-519985.pt"
                 ]
             },
             {
-                "steps": 350317,
-                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-350317.onnx",
-                "reward": 78.32965393066407,
-                "creation_time": 1752909512.1886647,
+                "steps": 529961,
+                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-529961.onnx",
+                "reward": -32.47260938841721,
+                "creation_time": 1752942792.1183739,
                 "auxillary_file_paths": [
-                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-350317.pt"
+                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-529961.pt"
                 ]
             },
             {
-                "steps": 352984,
-                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-352984.onnx",
-                "reward": -8548.336347268178,
-                "creation_time": 1752926947.578313,
+                "steps": 539995,
+                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-539995.onnx",
+                "reward": 51.31578254699707,
+                "creation_time": 1752943347.359523,
                 "auxillary_file_paths": [
-                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-352984.pt"
+                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-539995.pt"
                 ]
             },
             {
-                "steps": 355633,
-                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-355633.onnx",
-                "reward": -10656.648900469145,
-                "creation_time": 1752927207.7684507,
+                "steps": 549971,
+                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-549971.onnx",
+                "reward": -100.49554606846401,
+                "creation_time": 1752943894.9624841,
                 "auxillary_file_paths": [
-                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-355633.pt"
+                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-549971.pt"
                 ]
             },
             {
-                "steps": 357568,
-                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-357568.onnx",
-                "reward": -92827340868.85326,
-                "creation_time": 1752927521.7653747,
+                "steps": 558149,
+                "file_path": "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-558149.onnx",
+                "reward": -27.598679215567454,
+                "creation_time": 1752944386.4294155,
                 "auxillary_file_paths": [
-                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-357568.pt"
+                    "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-558149.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 357568,
+            "steps": 558149,
             "file_path": "results\\0719day2\\TrafficLightBrain.onnx",
-            "reward": -92827340868.85326,
-            "creation_time": 1752927521.7653747,
+            "reward": -27.598679215567454,
+            "creation_time": 1752944386.4294155,
             "auxillary_file_paths": [
-                "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-357568.pt"
+                "results\\0719day2\\TrafficLightBrain\\TrafficLightBrain-558149.pt"
             ]
         }
     },

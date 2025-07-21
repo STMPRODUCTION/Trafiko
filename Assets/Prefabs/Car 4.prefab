@@ -301,9 +301,15 @@ MonoBehaviour:
   stopDistanceToLight: 5
   stopDistanceToCar: 4
   decelerationDistance: 20
+  rightTurnChance: 0.1
+  baseTurnSpeed: 100
+  turnSpeedMultiplier: 2
+  minTurnSpeed: 30
+  maxTurnSpeed: 180
+  isGoingRight: 0
   angerGrowthRate: 0.2
   angerLogInterval: 2
-  waitTimeThreshold: 1
+  waitTimeThreshold: 15
   targetLight: {fileID: 0}
   currentSpeed: 0
   ray_Y_Origin: 0
@@ -319,6 +325,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   lightCheckInterval: 0.05
   carDetectionInterval: 0.03
+  turnPoint: {x: 0, y: 0, z: 0}
+  normalizeFactor: 1
+  isClockwise: 0
 --- !u!54 &-7991452868943202618
 Rigidbody:
   m_ObjectHideFlags: 0

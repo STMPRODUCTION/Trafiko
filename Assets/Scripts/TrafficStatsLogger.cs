@@ -14,6 +14,7 @@ public class TrafficStatsLogger : MonoBehaviour
     [SerializeField] public float avgCarSpeed;
     [SerializeField] public float recentAvgWaitTime;
     [SerializeField] public float recentAvgSpeed;
+    [SerializeField] public int AcidentInstances = 0;
 
     [SerializeField] private float accidentPenalty;
     private float lastReportTime = 0f;
@@ -159,6 +160,12 @@ public class TrafficStatsLogger : MonoBehaviour
         SyncDictionaryToList();
         currentCarCount--;
     }
+        public void ReportLaneChange(string previousLaneID, string laneID)
+    {
+        if (carsPerLane.ContainsKey(previousLaneID)) carsPerLane[previousLaneID]--;
+        if (carsPerLane.ContainsKey(laneID)) carsPerLane[laneID]++;
+    }
+
 
     public void ReportCar(float waitTime, string lane, float avgSpeed)
     {
@@ -271,7 +278,6 @@ public class TrafficStatsLogger : MonoBehaviour
 
         queue.Enqueue(value);
     }
-
     private void UpdateRecentWaitAvg()
     {
         float sum = 0f;
@@ -342,6 +348,7 @@ public class TrafficStatsLogger : MonoBehaviour
         agent.AddReward(-1f * accidentPenalty);
         Debug.Log($"[ACCIDENT] Detected in lane {lane} in scene {gameObject.scene.name}");
         ReportCarDestroyed(lane);
+        AcidentInstances++;
     }
 
     public void ResetAllData()
@@ -350,6 +357,8 @@ public class TrafficStatsLogger : MonoBehaviour
         totalWaitTime = 0f;
         avrageWaitTime = 0f;
         carsReported = 0;
+        currentCarCount=0;
+        AcidentInstances =0;
 
         // Reset speed data
         totalIntersectionSpeed = 0f;

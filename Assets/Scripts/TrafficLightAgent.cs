@@ -23,11 +23,13 @@ public class TrafficLightAgent : Agent
     [SerializeField] private float carPassedRewardWeight = 0.5f;
     [SerializeField] private float unfinishedCarPenaltyWeight = 0.1f;
     [SerializeField] private float maxInactivityTime = 10f;
+    [SerializeField] private float NoAccidentReward = 10f;
     
     // 🔧 NEW: Anger-based reward weights
     [SerializeField] private float angerPenaltyWeight = 0.3f;
     [SerializeField] private float peakAngerPenaltyWeight = 0.5f;
     [SerializeField] private float angerReductionRewardWeight = 0.2f;
+    
     
     // 🔧 NEW: Track previous state to prevent oscillation
     private bool[] previousLightStates = new bool[4];
@@ -473,6 +475,10 @@ public class TrafficLightAgent : Agent
                 }
                 
                 Debug.Log($"End episode anger stats - Avg: {avgAnger:F2}, Peak: {peakAnger:F2}, Final penalty: {finalAngerPenalty:F3}");
+            }
+            if(statsLogger.AcidentInstances==0)
+            {
+                AddReward(1f*NoAccidentReward);
             }
         }
         

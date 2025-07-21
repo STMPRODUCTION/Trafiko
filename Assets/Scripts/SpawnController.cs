@@ -20,6 +20,13 @@ public class CarSpawner : MonoBehaviour
     public TrafficLight lightE;
     public TrafficLight lightV;
 
+    [Header("Turning Points")]
+    public Vector3 turnPointN;
+    public Vector3 turnPointS;
+    public Vector3 turnPointE;
+    public Vector3 turnPointV;
+
+
     [Header("Basic Spawn Settings")]
     [Tooltip("Base spawn interval in seconds during normal hours")]
     public float baseSpawnInterval = 3f;
@@ -139,6 +146,7 @@ public class CarSpawner : MonoBehaviour
     // Cache spawn data
     private SpawnData[] spawnPoints;
     private readonly Collider[] overlapBuffer = new Collider[20]; // Increased buffer size
+    public Dictionary<string, Vector3> laneTurnPoints;
 
     [System.Serializable]
     private struct SpawnData
@@ -146,7 +154,9 @@ public class CarSpawner : MonoBehaviour
         public Transform spawnPoint;
         public TrafficLight light;
         public string laneID;
+        public Vector3 turnPoint;
     }
+
 
     void Start()
     {
@@ -156,10 +166,10 @@ public class CarSpawner : MonoBehaviour
         // Cache spawn data for better performance
         spawnPoints = new SpawnData[4]
         {
-            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N" },
-            new SpawnData { spawnPoint = spawnS, light = lightS, laneID = "S" },
-            new SpawnData { spawnPoint = spawnE, light = lightE, laneID = "E" },
-            new SpawnData { spawnPoint = spawnV, light = lightV, laneID = "V" }
+            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N", turnPoint = turnPointN },
+            new SpawnData { spawnPoint = spawnS, light = lightS, laneID = "S", turnPoint = turnPointS },
+            new SpawnData { spawnPoint = spawnE, light = lightE, laneID = "E", turnPoint = turnPointE },
+            new SpawnData { spawnPoint = spawnV, light = lightV, laneID = "V", turnPoint = turnPointV }
         };
 
         OnEpisodeBegin();
@@ -511,13 +521,12 @@ public class CarSpawner : MonoBehaviour
     {
         if (laneIndex < 0 || laneIndex >= spawnPoints.Length) return;
         if (currentCarCount >= maxCars) return;
-        
+
         SpawnData spawnData = spawnPoints[laneIndex];
-        
+
         // Find the best spawn position (could be behind spawn point if it's blocked)
         Vector3 spawnPosition = FindBestSpawnPosition(spawnData.spawnPoint);
-        
-        // If no valid position found, skip spawning
+
         if (spawnPosition == Vector3.zero)
         {
             Debug.Log($"Could not find valid spawn position in lane {spawnData.laneID} - queue too long");
@@ -530,27 +539,29 @@ public class CarSpawner : MonoBehaviour
         GameObject car = Instantiate(selectedPrefab, spawnPosition, spawnData.spawnPoint.rotation);
         SceneManager.MoveGameObjectToScene(car, gameObject.scene);
         car.tag = "Car";
-        
+
         CarController carCtrl = car.GetComponent<CarController>();
         if (carCtrl != null)
         {
             carCtrl.statsLogger = statsLogger;
             carCtrl.targetLight = spawnData.light;
             carCtrl.laneID = spawnData.laneID;
+
+            // Assign the turn point from spawnData directly
+            carCtrl.turnPoint = spawnData.turnPoint;
         }
-        
+
         if (statsLogger != null)
         {
             statsLogger.ReportCarSpawn(spawnData.laneID);
         }
-        
-        // Log if car was spawned behind spawn point
+
         float distanceFromSpawn = Vector3.Distance(spawnPosition, spawnData.spawnPoint.position);
         if (distanceFromSpawn > 0.1f)
         {
             //Debug.Log($"Car spawned {distanceFromSpawn:F1}m behind spawn point in lane {spawnData.laneID}");
         }
-    }
+}
 
     /// <summary>
     /// Checks if we can spawn in the given lane (either at spawn point or in queue behind it)
