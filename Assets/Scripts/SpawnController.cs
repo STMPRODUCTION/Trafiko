@@ -1,31 +1,47 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using Unity.MLAgents;
 
 public class CarSpawner : MonoBehaviour
 {
     [Header("Car Prefabs")]
     public List<GameObject> carPrefabs = new List<GameObject>();
 
-    [Header("Spawn Points")]
+    [Header("Right Turn Spawn Points")]
     public Transform spawnN;
     public Transform spawnS;
     public Transform spawnE;
     public Transform spawnV;
 
-    [Header("Traffic Lights")]
+    [Header("Left Turn Spawn Points")]
+    public Transform spawnNleft;
+    public Transform spawnSleft;
+    public Transform spawnEleft;
+    public Transform spawnVleft;
+
+    [Header("Right Turn Traffic Lights")]
     public TrafficLight lightN;
     public TrafficLight lightS;
     public TrafficLight lightE;
     public TrafficLight lightV;
 
-    [Header("Turning Points")]
+    [Header("Left Turn Traffic Lights")]
+    public TrafficLight lightNleft;
+    public TrafficLight lightSleft;
+    public TrafficLight lightEleft;
+    public TrafficLight lightVleft;
+
+    [Header("Right Turn Points")]
     public Vector3 turnPointN;
     public Vector3 turnPointS;
     public Vector3 turnPointE;
     public Vector3 turnPointV;
 
+    [Header("Left Turn Points")]
+    public Vector3 turnPointNleft;
+    public Vector3 turnPointSleft;
+    public Vector3 turnPointEleft;
+    public Vector3 turnPointVleft;
 
     [Header("Basic Spawn Settings")]
     [Tooltip("Base spawn interval in seconds during normal hours")]
@@ -145,8 +161,7 @@ public class CarSpawner : MonoBehaviour
 
     // Cache spawn data
     private SpawnData[] spawnPoints;
-    private readonly Collider[] overlapBuffer = new Collider[20]; // Increased buffer size
-    public Dictionary<string, Vector3> laneTurnPoints;
+    private readonly Collider[] overlapBuffer = new Collider[20];
 
     [System.Serializable]
     private struct SpawnData
@@ -155,25 +170,32 @@ public class CarSpawner : MonoBehaviour
         public TrafficLight light;
         public string laneID;
         public Vector3 turnPoint;
+        public bool isLeftTurnLane;
     }
-
 
     void Start()
     {
         carCountTimer = carCountCheckInterval;
-        residentialLaneIndex = Random.Range(0,5);
+        residentialLaneIndex = Random.Range(0, 4); // Only use main lanes for residential bias
         
         // Cache spawn data for better performance
-        spawnPoints = new SpawnData[4]
+        spawnPoints = new SpawnData[8]
         {
-            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N", turnPoint = turnPointN },
-            new SpawnData { spawnPoint = spawnS, light = lightS, laneID = "S", turnPoint = turnPointS },
-            new SpawnData { spawnPoint = spawnE, light = lightE, laneID = "E", turnPoint = turnPointE },
-            new SpawnData { spawnPoint = spawnV, light = lightV, laneID = "V", turnPoint = turnPointV }
+            // Right turn lanes (indices 0-3) - cars can go straight or turn right
+            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N", turnPoint = turnPointN, isLeftTurnLane = false },
+            new SpawnData { spawnPoint = spawnS, light = lightS, laneID = "S", turnPoint = turnPointS, isLeftTurnLane = false },
+            new SpawnData { spawnPoint = spawnE, light = lightE, laneID = "E", turnPoint = turnPointE, isLeftTurnLane = false },
+            new SpawnData { spawnPoint = spawnV, light = lightV, laneID = "V", turnPoint = turnPointV, isLeftTurnLane = false },
+
+            // Left turn lanes (indices 4-7) - cars always turn left
+            new SpawnData { spawnPoint = spawnNleft, light = lightNleft, laneID = "N", turnPoint = turnPointNleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnSleft, light = lightSleft, laneID = "S", turnPoint = turnPointSleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnEleft, light = lightEleft, laneID = "E", turnPoint = turnPointEleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnVleft, light = lightVleft, laneID = "V", turnPoint = turnPointVleft, isLeftTurnLane = true }
         };
 
         OnEpisodeBegin();
-        //Debug.Log($"CarSpawner initialized with queue-based spawning system");
+        Debug.Log($"CarSpawner initialized with {spawnPoints.Length} spawn points");
     }
 
     public void OnEpisodeBegin()
@@ -197,7 +219,11 @@ public class CarSpawner : MonoBehaviour
 
     void Update()
     {
-        currentCarCount = statsLogger.currentCarCount;
+        if (statsLogger != null)
+        {
+            currentCarCount = statsLogger.currentCarCount;
+        }
+
         // Update episode time
         episodeTime += Time.deltaTime * timeMultiplier;
         normalizedTime = Mathf.Clamp01(episodeTime / maxEpisodeLength);
@@ -229,7 +255,7 @@ public class CarSpawner : MonoBehaviour
         if (newPeriod != currentTrafficPeriod)
         {
             currentTrafficPeriod = newPeriod;
-            //Debug.Log($"Traffic period changed to: {currentTrafficPeriod} at time {episodeTime:F1}s ({normalizedTime:P0})");
+            Debug.Log($"Traffic period changed to: {currentTrafficPeriod} at time {episodeTime:F1}s ({normalizedTime:P0})");
         }
 
         // Update spawn rate based on current period
@@ -253,13 +279,7 @@ public class CarSpawner : MonoBehaviour
                 break;
         }
 
-        // Apply wave multiplier if in wave
-        if (isInWave && waveSystemActive)
-        {
-            // During waves, we don't use the normal spawn interval
-            // Instead we use the wave system timing
-        }
-        else
+        if (!isInWave || !waveSystemActive)
         {
             currentSpawnInterval = Mathf.Clamp(baseRate, minSpawnInterval, maxSpawnInterval);
         }
@@ -287,7 +307,6 @@ public class CarSpawner : MonoBehaviour
             waveTimer += Time.deltaTime;
             if (waveTimer >= waveGapDuration)
             {
-                // Start new wave
                 StartNewWave();
             }
         }
@@ -325,14 +344,14 @@ public class CarSpawner : MonoBehaviour
         // Choose which lane will produce this wave based on traffic period
         currentWaveLane = ChooseWaveLane();
         
-        //Debug.Log($"Traffic wave started from lane {spawnPoints[currentWaveLane].laneID} during {currentTrafficPeriod} - spawning {carsPerWave} cars");
+        Debug.Log($"Traffic wave started from lane {spawnPoints[currentWaveLane].laneID} during {currentTrafficPeriod} - spawning {carsPerWave} cars");
     }
     
     void EndCurrentWave()
     {
         isInWave = false;
         waveTimer = 0f;
-        //Debug.Log($"Traffic wave completed from lane {spawnPoints[currentWaveLane].laneID} - spawned {carsSpawnedInCurrentWave} cars");
+        Debug.Log($"Traffic wave completed from lane {spawnPoints[currentWaveLane].laneID} - spawned {carsSpawnedInCurrentWave} cars");
     }
     
     int ChooseWaveLane()
@@ -344,7 +363,7 @@ public class CarSpawner : MonoBehaviour
                 if (Random.Range(0f, 1f) < 0.7f)
                     return residentialLaneIndex;
                 else
-                    return Random.Range(0, 4);
+                    return Random.Range(0, 8); // Can be any lane including left turn lanes
                     
             case TrafficPeriod.AfternoonRush:
                 // 70% chance from non-residential lanes (people coming home)
@@ -353,8 +372,9 @@ public class CarSpawner : MonoBehaviour
                 {
                     // Pick a random non-residential lane
                     List<int> nonResidentialLanes = new List<int>();
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 8; i++)
                     {
+                        // Only exclude the main residential lane, not its left turn variant
                         if (i != residentialLaneIndex)
                             nonResidentialLanes.Add(i);
                     }
@@ -367,7 +387,7 @@ public class CarSpawner : MonoBehaviour
                     
             default:
                 // Random lane for non-rush hours
-                return Random.Range(0, 4);
+                return Random.Range(0, 8);
         }
     }
 
@@ -390,8 +410,14 @@ public class CarSpawner : MonoBehaviour
     void SpawnMorningRushTraffic()
     {
         // More traffic FROM residential area (people going to work)
-        float[] laneProbabilities = { 1f, 1f, 1f, 1f };
+        float[] laneProbabilities = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
         laneProbabilities[residentialLaneIndex] *= morningResidentialBias;
+        // Also boost the left turn lane for residential area
+        int residentialLeftTurnIndex = residentialLaneIndex + 4;
+        if (residentialLeftTurnIndex < 8)
+        {
+            laneProbabilities[residentialLeftTurnIndex] *= morningResidentialBias * 0.5f; // Less bias for left turns
+        }
 
         int selectedLane = GetWeightedRandomLane(laneProbabilities);
         SpawnCarAtLane(selectedLane);
@@ -400,13 +426,12 @@ public class CarSpawner : MonoBehaviour
     void SpawnAfternoonRushTraffic()
     {
         // More traffic TO residential area (people coming home from work)
-        // This means more traffic from OTHER lanes going towards residential
-        float[] laneProbabilities = { 1f, 1f, 1f, 1f };
+        float[] laneProbabilities = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
         
         // Increase probability for all lanes except residential
         for (int i = 0; i < laneProbabilities.Length; i++)
         {
-            if (i != residentialLaneIndex)
+            if (i != residentialLaneIndex && i != residentialLaneIndex + 4)
             {
                 laneProbabilities[i] *= afternoonResidentialBias;
             }
@@ -419,7 +444,7 @@ public class CarSpawner : MonoBehaviour
     void SpawnNormalTraffic()
     {
         // Equal probability for all lanes
-        int direction = Random.Range(0, 4);
+        int direction = Random.Range(0, 8);
         SpawnCarAtLane(direction);
     }
 
@@ -445,9 +470,7 @@ public class CarSpawner : MonoBehaviour
 
         return 0; // Fallback
     }
-    /// <summary>
-    /// Finds the best spawn position for a car in the given lane, checking backwards from spawn point
-    /// </summary>
+
     Vector3 FindBestSpawnPosition(Transform spawnPoint)
     {
         // Check original spawn position first
@@ -474,9 +497,6 @@ public class CarSpawner : MonoBehaviour
         return Vector3.zero; // Invalid position indicator
     }
 
-    /// <summary>
-    /// Checks if a position is clear for spawning a car
-    /// </summary>
     bool IsPositionClear(Vector3 position)
     {
         int hitCount = Physics.OverlapSphereNonAlloc(
@@ -497,14 +517,6 @@ public class CarSpawner : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Legacy method - now uses queue-based spawning
-    /// </summary>
-    bool IsSpawnPointClear(Transform spawnPoint)
-    {
-        return IsPositionClear(spawnPoint.position);
-    }
-
     GameObject GetRandomCarPrefab()
     {
         if (carPrefabs.Count == 0)
@@ -523,6 +535,7 @@ public class CarSpawner : MonoBehaviour
         if (currentCarCount >= maxCars) return;
 
         SpawnData spawnData = spawnPoints[laneIndex];
+        //Debug.LogWarning(spawnData.spawnPoint);
 
         // Find the best spawn position (could be behind spawn point if it's blocked)
         Vector3 spawnPosition = FindBestSpawnPosition(spawnData.spawnPoint);
@@ -543,12 +556,31 @@ public class CarSpawner : MonoBehaviour
         CarController carCtrl = car.GetComponent<CarController>();
         if (carCtrl != null)
         {
+            // Basic setup
             carCtrl.statsLogger = statsLogger;
             carCtrl.targetLight = spawnData.light;
             carCtrl.laneID = spawnData.laneID;
-
-            // Assign the turn point from spawnData directly
             carCtrl.turnPoint = spawnData.turnPoint;
+
+            // Configure turning behavior based on lane type
+            if (spawnData.isLeftTurnLane)
+            {
+                // Left turn lanes - cars always turn left (counter-clockwise)
+                carCtrl.isGoingRight = true; // This means "will turn"
+                //carCtrl.isClockwise = false; // Counter-clockwise for left turn
+                carCtrl.PrepareForRotation(false);
+            }
+            else
+            {
+                // Right turn lanes - cars may turn right based on rightTurnChance
+                // The CarController will handle the random chance in its Start() method
+                carCtrl.isClockwise = true; // If they turn, it will be clockwise (right)
+                carCtrl.PrepareForRotation(true);
+                // isGoingRight will be set randomly in CarController.Start() based on rightTurnChance
+            }
+
+            // Let the CarController prepare its rotation settings
+            //carCtrl.StartRightTurn();
         }
 
         if (statsLogger != null)
@@ -559,13 +591,10 @@ public class CarSpawner : MonoBehaviour
         float distanceFromSpawn = Vector3.Distance(spawnPosition, spawnData.spawnPoint.position);
         if (distanceFromSpawn > 0.1f)
         {
-            //Debug.Log($"Car spawned {distanceFromSpawn:F1}m behind spawn point in lane {spawnData.laneID}");
+            Debug.Log($"Car spawned {distanceFromSpawn:F1}m behind spawn point in lane {spawnData.laneID} (left turn: {spawnData.isLeftTurnLane})");
         }
-}
+    }
 
-    /// <summary>
-    /// Checks if we can spawn in the given lane (either at spawn point or in queue behind it)
-    /// </summary>
     public bool CanSpawnInLane(int laneIndex)
     {
         if (laneIndex < 0 || laneIndex >= spawnPoints.Length) return false;
@@ -577,9 +606,7 @@ public class CarSpawner : MonoBehaviour
         return spawnPosition != Vector3.zero;
     }
 
-    /// <summary>
-    /// Legacy method name for compatibility
-    /// </summary>
+    // Legacy method name for compatibility
     public bool canSpawn(int laneIndex)
     {
         return CanSpawnInLane(laneIndex);
@@ -600,6 +627,7 @@ public class CarSpawner : MonoBehaviour
             Vector3 labelPos = transform.position + Vector3.up * 2f;
             UnityEditor.Handles.Label(labelPos, 
                 $"Time: {episodeTime:F1}s ({normalizedTime:P0})\n" +
+                $"Period: {currentTrafficPeriod}\n" +
                 $"Spawn Rate: {currentSpawnInterval:F2}s\n" +
                 $"Wave: {(isInWave ? "Active" : "Inactive")}\n" +
                 $"Cars: {currentCarCount}/{maxCars}");
@@ -609,13 +637,23 @@ public class CarSpawner : MonoBehaviour
         // Draw spawn points and queue areas
         if (spawnPoints != null)
         {
-            Gizmos.color = Color.green;
-            foreach (var spawnData in spawnPoints)
+            for (int i = 0; i < spawnPoints.Length; i++)
             {
+                var spawnData = spawnPoints[i];
                 if (spawnData.spawnPoint != null)
                 {
+                    // Different colors for different lane types
+                    Gizmos.color = spawnData.isLeftTurnLane ? Color.blue : Color.green;
+                    
                     // Draw spawn point
                     Gizmos.DrawWireSphere(spawnData.spawnPoint.position, minSpawnDistance);
+                    
+                    // Draw turn point
+                    Gizmos.color = spawnData.isLeftTurnLane ? Color.cyan : Color.red;
+                    Gizmos.DrawWireSphere(spawnData.turnPoint, 1f);
+                    
+                    // Draw line to turn point
+                    Gizmos.DrawLine(spawnData.spawnPoint.position, spawnData.turnPoint);
                     
                     // Draw queue area
                     Vector3 queueStart = spawnData.spawnPoint.position;
@@ -625,13 +663,11 @@ public class CarSpawner : MonoBehaviour
                     Gizmos.DrawLine(queueStart, queueEnd);
                     
                     // Draw potential spawn positions in queue
-                    for (int i = 1; i <= maxQueueLength; i++)
+                    for (int j = 1; j <= maxQueueLength; j++)
                     {
-                        Vector3 queuePos = queueStart - (spawnData.spawnPoint.forward * (i * carSpacing));
+                        Vector3 queuePos = queueStart - (spawnData.spawnPoint.forward * (j * carSpacing));
                         Gizmos.DrawWireCube(queuePos, Vector3.one * 2f);
                     }
-                    
-                    Gizmos.color = Color.green;
                 }
             }
         }

@@ -17,6 +17,7 @@ public class CarController : MonoBehaviour
     public float minTurnSpeed = 45f; // Minimum turn speed
     public float maxTurnSpeed = 180f; // Maximum turn speed
     public bool isGoingRight = false;
+    public bool isClockwise = true; // Add this missing variable
 
     [Header("Anger System")]
     public float angerGrowthRate = 0.5f; // Base exponential growth rate
@@ -52,10 +53,10 @@ public class CarController : MonoBehaviour
 
     // Right turn variables
     private bool isTurning = false;
-    private float targetRotationY;
-    private float initialRotationY;
-    private bool turnStarted = false;
-    private string originalLaneID;
+    [SerializeField] private float targetRotationY;
+    [SerializeField] private float initialRotationY;
+    [SerializeField] private bool turnStarted = false;
+    [SerializeField] private string originalLaneID;
 
     // Anger system variables
     private float angerScore = 0f;
@@ -78,14 +79,14 @@ public class CarController : MonoBehaviour
     private float accelerationTimesDelta;
     private float decelerationTimesDelta;
 
-    private float totalRotation = 0f;
-    private float initialAngle;
-    private Vector3 initialPosition;
-    private Vector3 previousPosition;
-    private float targetTotalRotation = 90f; // for 90-degree turn
-    private float turnRadius;
-
-    public Vector3 turnPoint;
+    // Turn calculation variables
+    [SerializeField]private float totalRotation = 0f;
+    [SerializeField]private float initialAngle;
+    [SerializeField]private Vector3 initialPosition;
+    [SerializeField]private Vector3 previousPosition;
+    [SerializeField]private float targetTotalRotation = 90f; // for 90-degree turn
+    [SerializeField]private float turnRadius;
+    [SerializeField]public Vector3 turnPoint;
 
     void Start()
     {
@@ -99,12 +100,9 @@ public class CarController : MonoBehaviour
         originalLaneID = laneID;
 
         // Randomly determine if this car will turn right
-        isGoingRight = Random.Range(0f, 1f) < rightTurnChance;
-
-        // Store initial rotation for turn calculation
-        initialRotationY = transform.eulerAngles.y;
-        targetRotationY = initialRotationY + 90f; // Target is 90 degrees to the right
-
+        if(!isGoingRight)
+            isGoingRight = Random.Range(0f, 1f) < rightTurnChance;
+        
         // Pre-calculate commonly used values
         decelerationRange = decelerationDistance - stopDistanceToLight;
         slowestAllowedSpeed = maxSpeed * 0.1f;
@@ -117,8 +115,6 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-        //if (isDestroyed) return;
-
         // Cache deltaTime to avoid multiple calls
         float deltaTime = Time.deltaTime;
         accelerationTimesDelta = acceleration * deltaTime;
@@ -127,8 +123,8 @@ public class CarController : MonoBehaviour
         // Handle turning after passing the light
         if (isTurning)
         {
-            HandleRightTurn(deltaTime);
-            return; // Don't do normal movement logic while turning
+            HandleTurn(deltaTime);
+            return;
         }
 
         float brakeFactor = 0f;
@@ -171,15 +167,31 @@ public class CarController : MonoBehaviour
         UpdateMovement(brakeFactor, hardStop, deltaTime);
     }
 
-    [SerializeField] private float  normalizeFactor;
-    public bool isClockwise;
-    void StartRightTurn(bool clockwise = false)
+    public void PrepareForRotation(bool clockwise = true)
+    {
+        isClockwise = clockwise;
+        initialRotationY = transform.eulerAngles.y;
+        if(isClockwise)
+        {
+            targetRotationY = initialRotationY + 90f;
+            //Debug.LogWarning(initialRotationY); // Target is 90 degrees to the right
+            targetTotalRotation = 90f;
+        }
+        else
+        {
+            targetRotationY = initialRotationY - 90f; // Target is 90 degrees to the left
+            targetTotalRotation = -90f;
+            //Debug.LogWarning(initialRotationY);
+        }
+    }
+
+    public void StartRightTurn()
     {
         isTurning = true;
         totalRotation = 0f;
         initialPosition = transform.position;
         previousPosition = transform.position;
-        isClockwise = clockwise; // Store the direction
+        //isClockwise = clockwise; // Store the direction
         
         // Calculate initial angle relative to turn point
         Vector3 toInitialPos = initialPosition - turnPoint;
@@ -187,66 +199,75 @@ public class CarController : MonoBehaviour
         
         // Calculate the radius for this turn
         turnRadius = Vector3.Distance(initialPosition, turnPoint);
+        
+        // Prepare target rotation
+        //PrepareForRotation();
+        
+        Debug.Log($"Starting turn: clockwise={isClockwise}, initialAngle={initialAngle}, turnRadius={turnRadius}");
     }
 
-    // Call this in your update loop while turning
-    void HandleRightTurn(float deltaTime)
+    void HandleTurn(float deltaTime)
     {
-        // Instead of angular speed, calculate based on linear speed
-        // Linear speed = angular speed × radius
-        // So: angular speed = linear speed ÷ radius
+        // Calculate angular speed based on current linear speed
+        float linearSpeed = Mathf.Max(currentSpeed, 0.01f); // Ensure minimum speed during turns
+        float angularSpeed = linearSpeed / turnRadius; // radians per second
+        float angularSpeedDegrees = angularSpeed * Mathf.Rad2Deg;
         
-        float linearSpeed = currentSpeed; // Use the car's actual current speed
-        float angularSpeed = linearSpeed / turnRadius; // Convert to angular speed (radians per second)
-        float angularSpeedDegrees = angularSpeed * Mathf.Rad2Deg; // Convert to degrees per second
-        
-        // Apply speed limits if needed
+        // Apply turn speed limits
         angularSpeedDegrees = Mathf.Clamp(angularSpeedDegrees, minTurnSpeed, maxTurnSpeed);
         
         float rotationThisFrame = angularSpeedDegrees * deltaTime;
-
-        // Track total rotation
         totalRotation += rotationThisFrame;
 
-        // Calculate new position on circle
-        // Use direction multiplier for clockwise/counterclockwise
-        float directionMultiplier = isClockwise ? 1f : -1f;
+        // Calculate direction multiplier
+        // For clockwise (right turn): positive rotation
+        // For counter-clockwise (left turn): negative rotation
+        float directionMultiplier = isClockwise ? -1f : 1f;  //1f for left
         float currentAngle = initialAngle + (totalRotation * directionMultiplier);
         
+        // Calculate new position on the circular path
         Vector3 newPosition = turnPoint + new Vector3(
             Mathf.Cos(currentAngle * Mathf.Deg2Rad) * turnRadius,
-            initialPosition.y, // Keep the same Y as when we started the turn
+            initialPosition.y, // Keep same Y height
             Mathf.Sin(currentAngle * Mathf.Deg2Rad) * turnRadius
         );
         
         transform.position = newPosition;
 
-        // Calculate direction of movement for rotation
+        // Calculate movement direction for proper car orientation
         Vector3 movementDirection = (newPosition - previousPosition).normalized;
         
-        // If we have meaningful movement, update rotation
         if (movementDirection.magnitude > 0.01f)
         {
-            transform.rotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            // Smoothly rotate the car to face the movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * deltaTime);
         }
         
-        // Store current position for next frame
         previousPosition = newPosition;
 
-        // Check if turn is complete (90 degrees for right turn)
-        if (totalRotation >= targetTotalRotation)
+        // Check if turn is complete
+        if (totalRotation >=  Mathf.Abs(targetTotalRotation))
         {
-            isTurning = false;
-            
-            // Snap to final rotation if needed
-            transform.rotation = Quaternion.Euler(transform.eulerAngles.x, targetRotationY, transform.eulerAngles.z);
-            
-            ChangeLaneAfterTurn();
+            CompleteTurn();
         }
     }
+    
+    void CompleteTurn()
+    {
+        isTurning = false;
+        
+        // Snap to final rotation for precision
+        transform.rotation = Quaternion.Euler(transform.eulerAngles.x, targetRotationY, transform.eulerAngles.z);
+        // Change lane after completing the turn
+        ChangeLaneAfterTurn();
+        
+        Debug.LogWarning($"Turn completed. New lane: {laneID}");
+    }
+    
     void ChangeLaneAfterTurn()
     {
-        string newLaneID = GetNewLaneIDAfterRightTurn(originalLaneID);
+        string newLaneID = GetNewLaneIDAfterTurn(originalLaneID);
         
         if (newLaneID != laneID)
         {
@@ -256,30 +277,28 @@ public class CarController : MonoBehaviour
             // Log the lane change
             if (statsLogger != null)
             {
-               //Debug.Log($"Car changed lane from {previousLaneID} to {laneID} after right turn");
-                
-                // If your TrafficStatsLogger has a method for lane changes, uncomment this:
+                Debug.Log($"Car changed lane from {previousLaneID} to {laneID} after turn");
                 statsLogger.ReportLaneChange(previousLaneID, laneID);
             }
         }
     }
 
-    string GetNewLaneIDAfterRightTurn(string currentLaneID)
+    string GetNewLaneIDAfterTurn(string currentLaneID)
     {
-        // Map lane changes after right turns
-        // Add more mappings as needed for your specific intersection setup
+        // Map lane changes after turns
+        // Adjust these mappings based on your intersection layout
         switch (currentLaneID.ToUpper())
         {
-            case "N":
-                return "V";
-            case "S":
-                return "E";
-            case "E":
-                return "N";
-            case "V":
-                return "S";
+            case "N": // North lane
+                return isClockwise ? "E" : "V"; // Right turn -> East, Left turn -> West
+            case "S": // South lane  
+                return isClockwise ? "V" : "E"; // Right turn -> West, Left turn -> East
+            case "E": // East lane
+                return isClockwise ? "S" : "N"; // Right turn -> South, Left turn -> North
+            case "V": // West lane
+                return isClockwise ? "N" : "S"; // Right turn -> North, Left turn -> South
             default:
-                return currentLaneID;
+                return currentLaneID; // Return original if no mapping found
         }
     }
 
@@ -353,9 +372,8 @@ public class CarController : MonoBehaviour
             // Start turning if this car is supposed to go right
             if (isGoingRight && !turnStarted)
             {
-                StartRightTurn();
+                StartRightTurn(); // true for clockwise (right turn)
                 turnStarted = true;
-                isTurning = true;
             }
         }
 
@@ -428,7 +446,8 @@ public class CarController : MonoBehaviour
         {
             currentSpeed = Mathf.Min(currentSpeed + accelerationTimesDelta, maxSpeed);
         }
-        
+
+        // Only move forward when not turning
         if (!isTurning)
             transform.Translate(Vector3.forward * currentSpeed * deltaTime);
     }
@@ -493,7 +512,6 @@ public class CarController : MonoBehaviour
     {
         if (gameObject != null)
         {
-            
             Destroy(gameObject);
         }
     }
@@ -510,11 +528,13 @@ public class CarController : MonoBehaviour
         float currentWaitTime = isWaiting ? (Time.time - waitStartTime) : 0f;
         return totalWaitTime + currentWaitTime;
     }
+    
     // Public getter to check original lane ID (useful for debugging or UI)
     public string GetOriginalLaneID()
     {
         return originalLaneID;
     }
+    
     // Public methods for spawner
     public void SetCornerPoint(Vector3 corner)
     {
@@ -526,8 +546,9 @@ public class CarController : MonoBehaviour
     {
         if (!isTurning) return 0f;
         
-        float speedFactor = currentSpeed / maxSpeed;
-        float dynamicTurnSpeed = baseTurnSpeed + (baseTurnSpeed * turnSpeedMultiplier * speedFactor);
-        return Mathf.Clamp(dynamicTurnSpeed, minTurnSpeed, maxTurnSpeed);
+        float linearSpeed = Mathf.Max(currentSpeed, slowestAllowedSpeed);
+        float angularSpeed = linearSpeed / turnRadius;
+        float angularSpeedDegrees = angularSpeed * Mathf.Rad2Deg;
+        return Mathf.Clamp(angularSpeedDegrees, minTurnSpeed, maxTurnSpeed);
     }
 }

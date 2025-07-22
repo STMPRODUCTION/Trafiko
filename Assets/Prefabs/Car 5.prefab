@@ -214,12 +214,13 @@ MonoBehaviour:
   stopDistanceToLight: 3
   stopDistanceToCar: 4
   decelerationDistance: 20
-  rightTurnChance: 0.1
+  rightTurnChance: 0.15
   baseTurnSpeed: 100
   turnSpeedMultiplier: 2
   minTurnSpeed: 30
   maxTurnSpeed: 180
   isGoingRight: 0
+  isClockwise: 0
   angerGrowthRate: 0.4
   angerLogInterval: 2
   waitTimeThreshold: 15
@@ -238,9 +239,17 @@ MonoBehaviour:
     m_Bits: 4294967295
   lightCheckInterval: 0.05
   carDetectionInterval: 0.03
+  targetRotationY: 0
+  initialRotationY: 0
+  turnStarted: 0
+  originalLaneID: 
+  totalRotation: 0
+  initialAngle: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  previousPosition: {x: 0, y: 0, z: 0}
+  targetTotalRotation: 90
+  turnRadius: 0
   turnPoint: {x: 0, y: 0, z: 0}
-  normalizeFactor: 1
-  isClockwise: 0
 --- !u!54 &-7991452868943202618
 Rigidbody:
   m_ObjectHideFlags: 0
