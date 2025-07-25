@@ -17,7 +17,7 @@ behaviors:
     checkpoint_interval: 10000
     network_settings:
       normalize: false
-      hidden_units: 256
+      hidden_units: 512
       num_layers: 2
       vis_encode_type: simple
       memory: null
@@ -38,7 +38,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     even_checkpoints: false
-    max_steps: 800000
+    max_steps: 8000000
     time_horizon: 64
     summary_freq: 1500
     threaded: false

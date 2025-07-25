@@ -6,7 +6,12 @@ behaviors:
       batch_size: 128
       buffer_size: 2048
     network_settings:
-      hidden_units: 256
-    max_steps: 800000
-    checkpoint_interval: 10000
-    summary_freq: 1500
+      hidden_units: 512
+      actor_critic:
+        actor:
+          num_layers: 4
+        critic:
+          num_layers: 4
+    max_steps: 8000000
+    checkpoint_interval: 15000
+    summary_freq: 1000

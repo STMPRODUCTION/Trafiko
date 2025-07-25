@@ -6,7 +6,7 @@ public class CarSpawner : MonoBehaviour
 {
     [Header("Car Prefabs")]
     public List<GameObject> carPrefabs = new List<GameObject>();
-
+    public bool canSpawnLeft = false;
     [Header("Right Turn Spawn Points")]
     public Transform spawnN;
     public Transform spawnS;
@@ -147,6 +147,8 @@ public class CarSpawner : MonoBehaviour
     // Spawn timing
     private float spawnTimer;
     private float currentSpawnInterval;
+
+    [SerializeField] private int SpawnAbleLanes = 5;
     
     // Traffic state
     private enum TrafficPeriod
@@ -176,26 +178,26 @@ public class CarSpawner : MonoBehaviour
     void Start()
     {
         carCountTimer = carCountCheckInterval;
-        residentialLaneIndex = Random.Range(0, 4); // Only use main lanes for residential bias
+        residentialLaneIndex = Random.Range(0, SpawnAbleLanes); // Only use main lanes for residential bias
         
         // Cache spawn data for better performance
         spawnPoints = new SpawnData[8]
         {
             // Right turn lanes (indices 0-3) - cars can go straight or turn right
-            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N", turnPoint = turnPointN, isLeftTurnLane = false },
+            new SpawnData { spawnPoint = spawnN, light = lightN, laneID = "N", turnPoint = turnPointN},
             new SpawnData { spawnPoint = spawnS, light = lightS, laneID = "S", turnPoint = turnPointS, isLeftTurnLane = false },
             new SpawnData { spawnPoint = spawnE, light = lightE, laneID = "E", turnPoint = turnPointE, isLeftTurnLane = false },
             new SpawnData { spawnPoint = spawnV, light = lightV, laneID = "V", turnPoint = turnPointV, isLeftTurnLane = false },
 
             // Left turn lanes (indices 4-7) - cars always turn left
-            new SpawnData { spawnPoint = spawnNleft, light = lightNleft, laneID = "N", turnPoint = turnPointNleft, isLeftTurnLane = true },
-            new SpawnData { spawnPoint = spawnSleft, light = lightSleft, laneID = "S", turnPoint = turnPointSleft, isLeftTurnLane = true },
-            new SpawnData { spawnPoint = spawnEleft, light = lightEleft, laneID = "E", turnPoint = turnPointEleft, isLeftTurnLane = true },
-            new SpawnData { spawnPoint = spawnVleft, light = lightVleft, laneID = "V", turnPoint = turnPointVleft, isLeftTurnLane = true }
+            new SpawnData { spawnPoint = spawnNleft, light = lightNleft, laneID = "NLeft", turnPoint = turnPointNleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnSleft, light = lightSleft, laneID = "SLeft", turnPoint = turnPointSleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnEleft, light = lightEleft, laneID = "ELeft", turnPoint = turnPointEleft, isLeftTurnLane = true },
+            new SpawnData { spawnPoint = spawnVleft, light = lightVleft, laneID = "VLeft", turnPoint = turnPointVleft, isLeftTurnLane = true }
         };
 
         OnEpisodeBegin();
-        Debug.Log($"CarSpawner initialized with {spawnPoints.Length} spawn points");
+        //Debug.Log($"CarSpawner initialized with {spawnPoints.Length} spawn points");
     }
 
     public void OnEpisodeBegin()
@@ -214,7 +216,7 @@ public class CarSpawner : MonoBehaviour
         UpdateTrafficPeriodAndSpawnRate();
         spawnTimer = Random.Range(0f, currentSpawnInterval);
         
-        Debug.Log($"Episode began - Starting with {currentTrafficPeriod} traffic pattern");
+        //Debug.Log($"Episode began - Starting with {currentTrafficPeriod} traffic pattern");
     }
 
     void Update()
@@ -255,7 +257,7 @@ public class CarSpawner : MonoBehaviour
         if (newPeriod != currentTrafficPeriod)
         {
             currentTrafficPeriod = newPeriod;
-            Debug.Log($"Traffic period changed to: {currentTrafficPeriod} at time {episodeTime:F1}s ({normalizedTime:P0})");
+            //Debug.Log($"Traffic period changed to: {currentTrafficPeriod} at time {episodeTime:F1}s ({normalizedTime:P0})");
         }
 
         // Update spawn rate based on current period
@@ -344,14 +346,14 @@ public class CarSpawner : MonoBehaviour
         // Choose which lane will produce this wave based on traffic period
         currentWaveLane = ChooseWaveLane();
         
-        Debug.Log($"Traffic wave started from lane {spawnPoints[currentWaveLane].laneID} during {currentTrafficPeriod} - spawning {carsPerWave} cars");
+        //Debug.Log($"Traffic wave started from lane {spawnPoints[currentWaveLane].laneID} during {currentTrafficPeriod} - spawning {carsPerWave} cars");
     }
     
     void EndCurrentWave()
     {
         isInWave = false;
         waveTimer = 0f;
-        Debug.Log($"Traffic wave completed from lane {spawnPoints[currentWaveLane].laneID} - spawned {carsSpawnedInCurrentWave} cars");
+        //Debug.Log($"Traffic wave completed from lane {spawnPoints[currentWaveLane].laneID} - spawned {carsSpawnedInCurrentWave} cars");
     }
     
     int ChooseWaveLane()
@@ -363,7 +365,7 @@ public class CarSpawner : MonoBehaviour
                 if (Random.Range(0f, 1f) < 0.7f)
                     return residentialLaneIndex;
                 else
-                    return Random.Range(0, 8); // Can be any lane including left turn lanes
+                    return Random.Range(0, SpawnAbleLanes); // Can be any lane including left turn lanes
                     
             case TrafficPeriod.AfternoonRush:
                 // 70% chance from non-residential lanes (people coming home)
@@ -372,7 +374,7 @@ public class CarSpawner : MonoBehaviour
                 {
                     // Pick a random non-residential lane
                     List<int> nonResidentialLanes = new List<int>();
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         // Only exclude the main residential lane, not its left turn variant
                         if (i != residentialLaneIndex)
@@ -387,7 +389,7 @@ public class CarSpawner : MonoBehaviour
                     
             default:
                 // Random lane for non-rush hours
-                return Random.Range(0, 8);
+                return Random.Range(0, SpawnAbleLanes);
         }
     }
 
@@ -409,14 +411,21 @@ public class CarSpawner : MonoBehaviour
 
     void SpawnMorningRushTraffic()
     {
-        // More traffic FROM residential area (people going to work)
-        float[] laneProbabilities = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
+        float[] laneProbabilities;
+        if(canSpawnLeft) 
+        {
+            laneProbabilities = new float[] { 1f, 1f, 1f, 1f, 0.2f, 0.2f, 0.2f, 0.2f };
+        }
+        else 
+        {
+            laneProbabilities = new float[] { 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f };
+        }
         laneProbabilities[residentialLaneIndex] *= morningResidentialBias;
         // Also boost the left turn lane for residential area
         int residentialLeftTurnIndex = residentialLaneIndex + 4;
         if (residentialLeftTurnIndex < 8)
         {
-            laneProbabilities[residentialLeftTurnIndex] *= morningResidentialBias * 0.5f; // Less bias for left turns
+            laneProbabilities[residentialLeftTurnIndex] *= morningResidentialBias * 0.2f; // Less bias for left turns
         }
 
         int selectedLane = GetWeightedRandomLane(laneProbabilities);
@@ -425,9 +434,15 @@ public class CarSpawner : MonoBehaviour
 
     void SpawnAfternoonRushTraffic()
     {
-        // More traffic TO residential area (people coming home from work)
-        float[] laneProbabilities = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
-        
+        float[] laneProbabilities;
+        if(canSpawnLeft) 
+        {
+            laneProbabilities = new float[] { 1f, 1f, 1f, 1f, 0.2f, 0.2f, 0.2f, 0.2f };
+        }
+        else 
+        {
+            laneProbabilities = new float[] { 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f };
+        }
         // Increase probability for all lanes except residential
         for (int i = 0; i < laneProbabilities.Length; i++)
         {
@@ -443,8 +458,10 @@ public class CarSpawner : MonoBehaviour
 
     void SpawnNormalTraffic()
     {
+        int direction;
         // Equal probability for all lanes
-        int direction = Random.Range(0, 8);
+        if(canSpawnLeft) direction = Random.Range(0, 8);
+        else direction = Random.Range(0, SpawnAbleLanes);
         SpawnCarAtLane(direction);
     }
 
@@ -542,7 +559,7 @@ public class CarSpawner : MonoBehaviour
 
         if (spawnPosition == Vector3.zero)
         {
-            Debug.Log($"Could not find valid spawn position in lane {spawnData.laneID} - queue too long");
+            //Debug.Log($"Could not find valid spawn position in lane {spawnData.laneID} - queue too long");
             return;
         }
 
@@ -591,7 +608,7 @@ public class CarSpawner : MonoBehaviour
         float distanceFromSpawn = Vector3.Distance(spawnPosition, spawnData.spawnPoint.position);
         if (distanceFromSpawn > 0.1f)
         {
-            Debug.Log($"Car spawned {distanceFromSpawn:F1}m behind spawn point in lane {spawnData.laneID} (left turn: {spawnData.isLeftTurnLane})");
+            //Debug.Log($"Car spawned {distanceFromSpawn:F1}m behind spawn point in lane {spawnData.laneID} (left turn: {spawnData.isLeftTurnLane})");
         }
     }
 

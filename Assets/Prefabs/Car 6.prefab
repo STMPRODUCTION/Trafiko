@@ -211,9 +211,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acceleration: 4
   maxSpeed: 15
-  stopDistanceToLight: 6
-  stopDistanceToCar: 7
-  decelerationDistance: 23
+  stopDistanceToLight: 8
+  stopDistanceToCar: 10
+  decelerationDistance: 25
   rightTurnChance: 0.15
   baseTurnSpeed: 100
   turnSpeedMultiplier: 2
@@ -221,7 +221,7 @@ MonoBehaviour:
   maxTurnSpeed: 180
   isGoingRight: 0
   isClockwise: 0
-  angerGrowthRate: 0.3
+  angerGrowthRate: 0.7
   angerLogInterval: 2
   waitTimeThreshold: 15
   targetLight: {fileID: 0}
@@ -237,8 +237,8 @@ MonoBehaviour:
   carLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  lightCheckInterval: 0.05
-  carDetectionInterval: 0.03
+  lightCheckInterval: 0
+  carDetectionInterval: 0
   targetRotationY: 0
   initialRotationY: 0
   turnStarted: 0
@@ -250,6 +250,7 @@ MonoBehaviour:
   targetTotalRotation: 90
   turnRadius: 0
   turnPoint: {x: 0, y: 0, z: 0}
+  timeToDestroy: 0.01
 --- !u!54 &-7991452868943202618
 Rigidbody:
   m_ObjectHideFlags: 0

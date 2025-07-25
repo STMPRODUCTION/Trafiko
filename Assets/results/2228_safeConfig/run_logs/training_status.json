@@ -1,0 +1,65 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 1052849,
+                "file_path": "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1052849.onnx",
+                "reward": -122.81986708641053,
+                "creation_time": 1753427612.913051,
+                "auxillary_file_paths": [
+                    "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1052849.pt"
+                ]
+            },
+            {
+                "steps": 1057300,
+                "file_path": "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1057300.onnx",
+                "reward": -120.41839797076057,
+                "creation_time": 1753427998.308359,
+                "auxillary_file_paths": [
+                    "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1057300.pt"
+                ]
+            },
+            {
+                "steps": 1057769,
+                "file_path": "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1057769.onnx",
+                "reward": 6.058618686510169,
+                "creation_time": 1753428307.6043596,
+                "auxillary_file_paths": [
+                    "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1057769.pt"
+                ]
+            },
+            {
+                "steps": 1059998,
+                "file_path": "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1059998.onnx",
+                "reward": -194.24066162109375,
+                "creation_time": 1753428556.6784012,
+                "auxillary_file_paths": [
+                    "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1059998.pt"
+                ]
+            },
+            {
+                "steps": 1063010,
+                "file_path": "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1063010.onnx",
+                "reward": -193.9136438784392,
+                "creation_time": 1753428654.801264,
+                "auxillary_file_paths": [
+                    "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1063010.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1063010,
+            "file_path": "results\\2228_safeConfig\\TrafficLightBrain.onnx",
+            "reward": -193.9136438784392,
+            "creation_time": 1753428654.801264,
+            "auxillary_file_paths": [
+                "results\\2228_safeConfig\\TrafficLightBrain\\TrafficLightBrain-1063010.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cu128"
+    }
+}

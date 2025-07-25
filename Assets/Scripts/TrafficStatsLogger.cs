@@ -34,21 +34,30 @@ public class TrafficStatsLogger : MonoBehaviour
     [SerializeField]
     public List<LaneCount> carsPerLaneList = new List<LaneCount>()
     {
-        new LaneCount { laneID = "N", carCount = 0 },
-        new LaneCount { laneID = "S", carCount = 0 },
-        new LaneCount { laneID = "E", carCount = 0 },
-        new LaneCount { laneID = "V", carCount = 0 }
+        new LaneCount { laneID = "N", carCount = 0},
+        new LaneCount { laneID = "S", carCount = 0},
+        new LaneCount { laneID = "E", carCount = 0},
+        new LaneCount { laneID = "V", carCount = 0},
+        new LaneCount { laneID = "NLeft", carCount = 0},
+        new LaneCount { laneID = "SLeft", carCount = 0},
+        new LaneCount { laneID = "ELeft", carCount = 0},
+        new LaneCount { laneID = "VLeft", carCount = 0}
     };
 
     [SerializeField]
     public List<LaneAngerStats> angerPerLaneList = new List<LaneAngerStats>()
     {
-        new LaneAngerStats { laneID = "N", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0 },
-        new LaneAngerStats { laneID = "S", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0 },
-        new LaneAngerStats { laneID = "E", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0 },
-        new LaneAngerStats { laneID = "V", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0 }
+        new LaneAngerStats { laneID = "N", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "S", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "E", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "V", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "NLeft", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "SLeft", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "ELeft", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0},
+        new LaneAngerStats { laneID = "VLeft", totalAnger = 0f, avgAnger = 0f, peakAnger = 0f, angerReports = 0}
     };
 
+    // Dictionaries using direct lane IDs
     private Dictionary<string, int> carsPerLane = new Dictionary<string, int>();
     private Dictionary<string, LaneAngerStats> angerPerLane = new Dictionary<string, LaneAngerStats>();
     private float totalIntersectionSpeed = 0f;
@@ -100,16 +109,42 @@ public class TrafficStatsLogger : MonoBehaviour
         // Register this instance for this scene
         sceneInstances[myScene] = this;
 
+        // Initialize dictionaries with all lane IDs
+        string[] laneIDs = { "N", "S", "E", "V", "NLeft", "SLeft", "ELeft", "VLeft" };
+        
+        // Initialize car count dictionary
+        foreach (string laneID in laneIDs)
+        {
+            carsPerLane[laneID] = 0;
+        }
+
+        // Initialize anger stats dictionary
+        foreach (string laneID in laneIDs)
+        {
+            angerPerLane[laneID] = new LaneAngerStats 
+            { 
+                laneID = laneID, 
+                totalAnger = 0f, 
+                avgAnger = 0f, 
+                peakAnger = 0f, 
+                angerReports = 0 
+            };
+        }
+
         // Sync list to dictionary
         foreach (var lane in carsPerLaneList)
         {
-            carsPerLane[lane.laneID] = lane.carCount;
+            if (carsPerLane.ContainsKey(lane.laneID))
+                carsPerLane[lane.laneID] = lane.carCount;
         }
 
         // Sync anger stats list to dictionary
         foreach (var angerStats in angerPerLaneList)
         {
-            angerPerLane[angerStats.laneID] = angerStats;
+            if (angerPerLane.ContainsKey(angerStats.laneID))
+            {
+                angerPerLane[angerStats.laneID] = angerStats;
+            }
         }
     }
 
@@ -147,27 +182,34 @@ public class TrafficStatsLogger : MonoBehaviour
         }
     }
 
-    public void ReportCarSpawn(string lane)
+    // Simplified methods using direct lane IDs
+    public void ReportCarSpawn(string laneID)
     {
-        if (carsPerLane.ContainsKey(lane)) carsPerLane[lane]++;
+        if (carsPerLane.ContainsKey(laneID)) 
+            carsPerLane[laneID]++;
         SyncDictionaryToList();
         currentCarCount++;
     }
 
-    public void ReportCarDestroyed(string lane)
+    public void ReportCarDestroyed(string laneID)
     {
-        if (carsPerLane.ContainsKey(lane)) carsPerLane[lane]--;
+        if (carsPerLane.ContainsKey(laneID)) 
+            carsPerLane[laneID]--;
         SyncDictionaryToList();
         currentCarCount--;
     }
-        public void ReportLaneChange(string previousLaneID, string laneID)
+
+    public void ReportLaneChange(string previousLaneID, string newLaneID)
     {
-        if (carsPerLane.ContainsKey(previousLaneID)) carsPerLane[previousLaneID]--;
-        if (carsPerLane.ContainsKey(laneID)) carsPerLane[laneID]++;
+        if (carsPerLane.ContainsKey(previousLaneID)) 
+            carsPerLane[previousLaneID]--;
+        if (carsPerLane.ContainsKey(newLaneID)) 
+            carsPerLane[newLaneID]++;
+        
+        SyncDictionaryToList();
     }
 
-
-    public void ReportCar(float waitTime, string lane, float avgSpeed)
+    public void ReportCar(float waitTime, string laneID, float avgSpeed)
     {
         totalWaitTime += waitTime;
         carsReported++;
@@ -184,7 +226,7 @@ public class TrafficStatsLogger : MonoBehaviour
         UpdateRecentSpeedAvg();
     }
 
-    // New function to report anger data
+    // Simplified function to report anger data
     public void ReportAngerData(string laneID, float angerScore, float totalWaitTime)
     {
         // Update global anger statistics
@@ -229,46 +271,47 @@ public class TrafficStatsLogger : MonoBehaviour
         {
             // Higher anger = negative reward
             float angerPenalty = -angerScore * 0.1f; // Scale as needed
-            agent.AddReward(angerPenalty);
+            //agent.AddReward(angerPenalty);
         }
     }
 
-    // New function to track cars entering the intersection
-    public void ReportCarEnterIntersection(string lane)
+    // Simplified functions to track cars entering/exiting intersection
+    public void ReportCarEnterIntersection(string laneID)
     {
         carsInIntersection++;
-        //Debug.Log($"[INTERSECTION] Car entered intersection from lane {lane}. Total cars in intersection: {carsInIntersection}");
+        //Debug.Log($"[INTERSECTION] Car entered intersection from lane {laneID}. Total cars in intersection: {carsInIntersection}");
     }
 
-    // New function to track cars exiting the intersection
-    public void ReportCarExitIntersection(string lane)
+    public void ReportCarExitIntersection(string laneID)
     {
         carsInIntersection = Mathf.Max(0, carsInIntersection - 1); // Ensure it doesn't go below 0
-        //Debug.Log($"[INTERSECTION] Car exited intersection to lane {lane}. Total cars in intersection: {carsInIntersection}");
+        //Debug.Log($"[INTERSECTION] Car exited intersection to lane {laneID}. Total cars in intersection: {carsInIntersection}");
     }
 
-    // New function to get the current number of cars in intersection
+    // Function to get the current number of cars in intersection
     public int GetCarsInIntersection()
     {
         return carsInIntersection;
     }
 
-    public int GetCarsOnLane(string lane)
+    // Simplified function to get cars on a specific lane
+    public int GetCarsOnLane(string laneID)
     {
-        return carsPerLane.ContainsKey(lane) ? carsPerLane[lane] : 0;
+        return carsPerLane.ContainsKey(laneID) ? carsPerLane[laneID] : 0;
     }
 
-    // New function to get anger statistics for a specific lane
+    // Simplified function to get anger statistics for a specific lane
     public LaneAngerStats GetLaneAngerStats(string laneID)
     {
         return angerPerLane.ContainsKey(laneID) ? angerPerLane[laneID] : null;
+
     }
 
-    // New function to get overall anger statistics
-    public (float avgAnger, float peakAnger, float recentAvgAnger, int totalReports) GetOverallAngerStats()
+    // Function to get overall anger statistics
+    public (float totalAnger, float peakAnger, float recentAvgAnger, int totalReports) GetOverallAngerStats()
     {
-        float avgAnger = angerReports > 0 ? totalAngerScore / angerReports : 0f;
-        return (avgAnger, peakAngerScore, recentAvgAngerScore, angerReports);
+        return (totalAngerScore, peakAngerScore, recentAvgAngerScore, angerReports);
+        //return (0f,0f,0f,0);
     }
 
     private void AddRecentValue(Queue<float> queue, float value)
@@ -278,6 +321,7 @@ public class TrafficStatsLogger : MonoBehaviour
 
         queue.Enqueue(value);
     }
+    
     private void UpdateRecentWaitAvg()
     {
         float sum = 0f;
@@ -305,6 +349,12 @@ public class TrafficStatsLogger : MonoBehaviour
         avgCarSpeed = speedSamples > 0 ? totalIntersectionSpeed / speedSamples : 0f;
         avgAngerScore = angerReports > 0 ? totalAngerScore / angerReports : 0f;
         Time.timeScale = simulationTimeScale;
+        
+        // Sync dictionaries to lists for inspector visibility (only in editor for performance)
+#if UNITY_EDITOR
+        SyncDictionaryToList();
+        SyncAngerDictionaryToList();
+#endif
     }
 
     public (float totalUnfinishedWait, float totalUnfinishedSpeed, int unfinishedCarCount) ReportUnfinishedCars()
@@ -343,11 +393,11 @@ public class TrafficStatsLogger : MonoBehaviour
         return (totalWait, totalSpeed, count);
     }
 
-    public void ReportAccident(string lane)
+    public void ReportAccident(string laneID)
     {
         agent.AddReward(-1f * accidentPenalty);
-        Debug.Log($"[ACCIDENT] Detected in lane {lane} in scene {gameObject.scene.name}");
-        ReportCarDestroyed(lane);
+        //Debug.Log($"[ACCIDENT] Detected in lane {laneID} in scene {gameObject.scene.name}");
+        ReportCarDestroyed(laneID);
         AcidentInstances++;
     }
 
@@ -357,8 +407,8 @@ public class TrafficStatsLogger : MonoBehaviour
         totalWaitTime = 0f;
         avrageWaitTime = 0f;
         carsReported = 0;
-        currentCarCount=0;
-        AcidentInstances =0;
+        currentCarCount = 0;
+        AcidentInstances = 0;
 
         // Reset speed data
         totalIntersectionSpeed = 0f;

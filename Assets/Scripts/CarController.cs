@@ -203,13 +203,12 @@ public class CarController : MonoBehaviour
         // Prepare target rotation
         //PrepareForRotation();
         
-        Debug.Log($"Starting turn: clockwise={isClockwise}, initialAngle={initialAngle}, turnRadius={turnRadius}");
+        //Debug.Log($"Starting turn: clockwise={isClockwise}, initialAngle={initialAngle}, turnRadius={turnRadius}");
     }
-
+    public float linearSpeed = 5f;
     void HandleTurn(float deltaTime)
     {
         // Calculate angular speed based on current linear speed
-        float linearSpeed = Mathf.Max(currentSpeed, 0.01f); // Ensure minimum speed during turns
         float angularSpeed = linearSpeed / turnRadius; // radians per second
         float angularSpeedDegrees = angularSpeed * Mathf.Rad2Deg;
         
@@ -262,7 +261,7 @@ public class CarController : MonoBehaviour
         // Change lane after completing the turn
         ChangeLaneAfterTurn();
         
-        Debug.LogWarning($"Turn completed. New lane: {laneID}");
+        //Debug.LogWarning($"Turn completed. New lane: {laneID}");
     }
     
     void ChangeLaneAfterTurn()
@@ -277,7 +276,7 @@ public class CarController : MonoBehaviour
             // Log the lane change
             if (statsLogger != null)
             {
-                Debug.Log($"Car changed lane from {previousLaneID} to {laneID} after turn");
+                //Debug.Log($"Car changed lane from {previousLaneID} to {laneID} after turn");
                 statsLogger.ReportLaneChange(previousLaneID, laneID);
             }
         }
@@ -296,7 +295,15 @@ public class CarController : MonoBehaviour
             case "E": // East lane
                 return isClockwise ? "S" : "N"; // Right turn -> South, Left turn -> North
             case "V": // West lane
-                return isClockwise ? "N" : "S"; // Right turn -> North, Left turn -> South
+                return isClockwise ? "N" : "S";
+            case "NLEFT": // North lane
+                return "V";
+            case "SLEFT": // South lane  
+                return "E"; // Right turn -> West, Left turn -> East
+            case "ELEFT": // East lane
+                return "N"; // Right turn -> South, Left turn -> North
+            case "VLEFT": // West lane
+                return "S"; // Right turn -> North, Left turn -> South // Right turn -> North, Left turn -> South
             default:
                 return currentLaneID; // Return original if no mapping found
         }
@@ -325,7 +332,7 @@ public class CarController : MonoBehaviour
             {
                 // Exponential growth: anger = base * e^(rate * waitTime)
                 float waitTimeForAnger = currentWaitTime - waitTimeThreshold;
-                angerScore = Mathf.Exp(angerGrowthRate * waitTimeForAnger) - 1f;
+                angerScore = angerGrowthRate * waitTimeForAnger;
             }
         }
 
@@ -455,25 +462,65 @@ public class CarController : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (isDestroyed) return;
-
-        if (!hasPassedLight && other.CompareTag($"IntersectionTrigger{laneID}"))
+        
+        if (!laneID.EndsWith("Left"))
+        {
+            // Left lane logic
+            if (!hasPassedLight && other.CompareTag($"IntersectionTrigger{laneID}"))
+            {
+                hasPassedLight = true;
+                float timeTaken = Time.time - spawnTime;
+                avgSpeed = distanceToTrafficLight / timeTaken;
+                // Final anger data log before destruction
+                LogAngerData();
+                statsLogger?.ReportCar(timeTaken, laneID, avgSpeed);
+                statsLogger?.ReportCarDestroyed(laneID);
+                if (hasEnteredIntersection)
+                {
+                    statsLogger?.ReportCarExitIntersection(laneID);
+                }
+                DestroyCar(5f);
+            }
+            else if (other.CompareTag("Car") && !accidentReported)
+            {
+                CarController otherCar = other.GetComponent<CarController>();
+                if (otherCar != null && otherCar.laneID != this.laneID)
+                {
+                    accidentReported = true;
+                    currentSpeed = 0f;
+                
+                    // Log final anger data for accident
+                    LogAngerData();
+                
+                    statsLogger?.ReportAccident(this.laneID);
+                    DestroyCar(timeToDestroy);
+                }
+            }
+        }
+        else
+        {
+            // Non-left lane logic
+            CarDestroyHelper(other);
+        }
+    }
+    [SerializeField] private float timeToDestroy = 5f;
+    void CarDestroyHelper(Collider other)
+    {
+        string triggerLaneID = laneID.Replace("Left", "");
+        if (!hasPassedLight && other.CompareTag($"IntersectionTrigger{triggerLaneID}"))
         {
             hasPassedLight = true;
-
             float timeTaken = Time.time - spawnTime;
             avgSpeed = distanceToTrafficLight / timeTaken;
-
             // Final anger data log before destruction
             LogAngerData();
-
             statsLogger?.ReportCar(timeTaken, laneID, avgSpeed);
             statsLogger?.ReportCarDestroyed(laneID);
             if (hasEnteredIntersection)
             {
                 statsLogger?.ReportCarExitIntersection(laneID);
             }
-
-            DestroyCar(5f);
+            DestroyCar(timeToDestroy);
         }
         else if (other.CompareTag("Car") && !accidentReported)
         {
@@ -482,12 +529,12 @@ public class CarController : MonoBehaviour
             {
                 accidentReported = true;
                 currentSpeed = 0f;
-                
+            
                 // Log final anger data for accident
                 LogAngerData();
-                
+            
                 statsLogger?.ReportAccident(this.laneID);
-                DestroyCar(5f);
+                DestroyCar(timeToDestroy);
             }
         }
     }
