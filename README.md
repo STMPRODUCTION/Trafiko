@@ -12,6 +12,15 @@ Trafiko simulates vehicle traffic in a virtual environment with cars generated b
 
 The system is designed with scalability in mind: future versions can support multiple communicating intersections, making it a viable solution for **smart city** infrastructure.
 
+### 🏋️‍♂️ Reinforcement Learning Training Details
+
+During training, the agent was rewarded based on its ability to improve traffic flow across the intersection. Specifically, the reward function was designed to:
+
+- **Encourage clearing vehicles** from the intersection efficiently
+- **Penalize high congestion** levels, especially during peak traffic
+- **Minimize average vehicle waiting time**, promoting fairness and overall throughput
+
+These reward signals help the agent learn a balanced traffic light control policy that dynamically adapts to varying traffic conditions while maintaining smooth flow and reducing unnecessary idling.
 ---
 ## 🛠️ Technologies Used
 
