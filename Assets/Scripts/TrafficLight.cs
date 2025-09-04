@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class TrafficLight : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class TrafficLight : MonoBehaviour
 
     //private float timer = 0f;
     private Renderer rend;
+    public float yellowDelay = 1f; // how long to stay yellow before red
 
     void Start()
     {
@@ -45,10 +47,20 @@ public class TrafficLight : MonoBehaviour
             rend.material.color = Color.red;
     }
     public void SetGreen(bool green)
-{
-    isGreen = green;
-    UpdateColor();
-    // Add your logic to update visuals/colliders if needed
-}
-
+    {
+        StartCoroutine(SetYellowDelay(green));
+    }
+    private IEnumerator SetYellowDelay(bool green)
+    {
+        // Immediately set yellow
+        if (green != isGreen)
+        {
+            isGreen = false;
+            rend.material.color = Color.yellow;
+            // Wait for the delay
+            yield return new WaitForSeconds(yellowDelay);
+            isGreen = green;
+            UpdateColor();
+        }
+    }
 }
