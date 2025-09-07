@@ -34,28 +34,24 @@ public class GraphGenerator : MonoBehaviour
     public bool showConnectionPoints = true;
     public bool connectToPorts = false;
 
-    [SerializeField, HideInInspector] private List<Vector3> nodes = new();
-    [SerializeField, HideInInspector] private List<float> radii = new();
-    [SerializeField, HideInInspector] private List<Vector2Int> edges = new();
-    [SerializeField, HideInInspector] private List<int> degrees = new();
-    [SerializeField, HideInInspector] private List<CardinalDirection[]> nodeConnections = new();
+    [SerializeField, HideInInspector] public List<Vector3> nodes = new();
+    [SerializeField, HideInInspector] public List<float> radii = new();
+    [SerializeField, HideInInspector] public List<Vector2Int> edges = new();
+    [SerializeField, HideInInspector] public List<int> degrees = new();
+    [SerializeField] public List<CardinalDirection[]> nodeConnections = new();
 
-    private HashSet<(int, int)> edgeSet;
+    public HashSet<(int, int)> edgeSet;
     private System.Random rng;
 
     // Cardinal directions
     public enum CardinalDirection { North, East, South, West }
-
-    void OnValidate()
-    {
-        if (autoRegenerate) Generate();
-    }
 
 #if UNITY_EDITOR
     [ContextMenu("Regenerate Now")]
 #endif
     public void Generate()
     {
+        Debug.Log(nodeConnections);
         rng = new System.Random(seed);
         nodes.Clear();
         radii.Clear();
