@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class GraphGenerator : MonoBehaviour
 {
     [Header("Graph Settings")]
@@ -46,6 +45,12 @@ public class GraphGenerator : MonoBehaviour
     // Cardinal directions
     public enum CardinalDirection { North, East, South, West }
 
+    // Runtime generation
+    void Start()
+    {
+        Generate();
+    }
+
 #if UNITY_EDITOR
     [ContextMenu("Regenerate Now")]
 #endif
@@ -73,8 +78,28 @@ public class GraphGenerator : MonoBehaviour
         RemoveIntersectingEdges();
     }
 
+    // Add runtime controls
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Generate();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            ConnectToPorts();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ConnectToCenters();
+        }
+    }
+
 #if UNITY_EDITOR
     [ContextMenu("Connect To Ports")]
+#endif
     public void ConnectToPorts()
     {
         connectToPorts = true;
@@ -83,16 +108,21 @@ public class GraphGenerator : MonoBehaviour
         {
             RebuildNodeConnections(i);
         }
+#if UNITY_EDITOR
         UnityEditor.SceneView.RepaintAll();
+#endif
     }
 
+#if UNITY_EDITOR
     [ContextMenu("Connect To Centers")]
+#endif
     public void ConnectToCenters()
     {
         connectToPorts = false;
+#if UNITY_EDITOR
         UnityEditor.SceneView.RepaintAll();
-    }
 #endif
+    }
 
     private void PlaceNodes()
     {
