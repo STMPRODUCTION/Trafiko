@@ -10,6 +10,7 @@ TagManager:
   - IntersectionTriggerS
   - IntersectionTriggerE
   - IntersectionTriggerV
+  - TrafficLight
   layers:
   - Default
   - TransparentFX
