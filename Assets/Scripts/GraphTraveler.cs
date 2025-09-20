@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 public class GraphTraveler : MonoBehaviour
 {
@@ -31,7 +32,6 @@ public class GraphTraveler : MonoBehaviour
 
     private void Update()
     {
-        if (!isMoving || loadedPath == null || loadedPath.points.Count < 2) return;
 
         // Check for obstacles
         if (IsTravelerTooClose() || IsRedLightAhead())
@@ -40,14 +40,24 @@ public class GraphTraveler : MonoBehaviour
         }
 
         Vector3 target = loadedPath.points[currentIndex + 1];
+
+        // Move towards target
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+
+        // Rotate towards target
+        Vector3 direction = (target - transform.position).normalized;
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
 
         if (Vector3.Distance(transform.position, target) < 0.01f)
         {
             currentIndex++;
             if (currentIndex >= loadedPath.points.Count - 1)
             {
-                isMoving = false; // Reached end of path
+                OnDestory();
             }
         }
     }
@@ -73,7 +83,7 @@ public class GraphTraveler : MonoBehaviour
             if (hit.collider.CompareTag(trafficLightTag))
             {
                 TrafficLight light = hit.collider.GetComponent<TrafficLight>();
-                if (light != null && !light.isGreen)
+                if (!light.isGreen)
                 {
                     return true; // Stop if light is red
                 }
@@ -90,7 +100,7 @@ public class GraphTraveler : MonoBehaviour
             string[] files = Directory.GetFiles(folderPath, "*.cgraph");
             if (files.Length > 0)
             {
-                string randomFile = files[Random.Range(0, files.Length)];
+                string randomFile = files[UnityEngine.Random.Range(0, files.Length)];
                 string json = File.ReadAllText(randomFile);
                 loadedPath = JsonUtility.FromJson<PathData>(json);
                 Debug.Log($"Loaded random path: {Path.GetFileName(randomFile)} with {loadedPath.points.Count} points.");
@@ -104,5 +114,10 @@ public class GraphTraveler : MonoBehaviour
         {
             Debug.LogError($"Path folder not found: {folderPath}");
         }
+    }
+    private void OnDestory()
+    {
+        isMoving = false; // Reached end of path
+        Destroy(gameObject); // Destroy traveler when done
     }
 }
