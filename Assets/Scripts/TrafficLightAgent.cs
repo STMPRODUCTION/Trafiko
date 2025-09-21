@@ -25,16 +25,16 @@ public class TrafficLightAgent : Agent
     // 🔧 FIXED: Balanced reward weights
     [SerializeField] private float speedRewardWeight = 1.0f;
     [SerializeField] private float waitPenaltyWeight = 0.5f;
-    [SerializeField] private float conflictPenaltyWeight = 2.0f;
+    //[SerializeField] private float conflictPenaltyWeight = 2.0f;
     [SerializeField] private float congestionPenaltyWeight = 0.1f;
     [SerializeField] private float carPassedRewardWeight = 0.5f;
-    [SerializeField] private float unfinishedCarPenaltyWeight = 0.1f;
+    //[SerializeField] private float unfinishedCarPenaltyWeight = 0.1f;
     [SerializeField] private float maxInactivityTime = 10f;
-    [SerializeField] private float NoAccidentReward = 10f;
+    //[SerializeField] private float NoAccidentReward = 10f;
     
     // 🔧 NEW: Anger-based reward weights
-    [SerializeField] private float angerPenaltyWeight = 0.3f;
-    [SerializeField] private float peakAngerPenaltyWeight = 0.5f;
+//[SerializeField] private float angerPenaltyWeight = 0.3f;
+    //[SerializeField] private float peakAngerPenaltyWeight = 0.5f;
     [SerializeField] private float angerReductionRewardWeight = 0.2f;
     [SerializeField] private float inactivityPenaltyWeight = 0.2f;
     
@@ -42,10 +42,10 @@ public class TrafficLightAgent : Agent
     // 🔧 UPDATED: Track previous state for all 8 lanes to prevent oscillation
     private bool[] previousLightStates = new bool[8]; // 4 straight + 4 left turn
 
-    [SerializeField] private float stabilityRewardWeight = 0.1f;
+    //[SerializeField] private float stabilityRewardWeight = 0.1f;
     
     // 🔧 UPDATED: Track previous anger levels for all 8 lanes
-    private float previousOverallAnger = 0f;
+    //private float previousOverallAnger = 0f;
     private float[] previousLaneAnger = new float[8]; // 4 straight + 4 left turn
     
     // 🔧 NEW: Cache the scene-specific logger
@@ -55,8 +55,8 @@ public class TrafficLightAgent : Agent
     // 🔧 NEW: Random episode start configuration
     [Header("Episode Start Configuration")]
     [SerializeField] private bool randomizeInitialLights = true;
-    [SerializeField] private float randomGreenProbability = 0.3f; // 30% chance for each light to be green
-    [SerializeField] private bool preventInitialConflicts = true; // Prevent conflicting directions from being green initially
+    //[SerializeField] private float randomGreenProbability = 0.3f; // 30% chance for each light to be green
+    //[SerializeField] private bool preventInitialConflicts = true; // Prevent conflicting directions from being green initially
 
     public override void OnEpisodeBegin()
     {
@@ -85,7 +85,7 @@ public class TrafficLightAgent : Agent
         episodeTimer = 0f;
         timer = 0f;
         previousLightStates = new bool[8];
-        previousOverallAnger = 0f;
+        //previousOverallAnger = 0f;
         previousLaneAnger = new float[8];
         currentConfigurationIndex = 0;
         

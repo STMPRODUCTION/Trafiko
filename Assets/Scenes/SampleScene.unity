@@ -9979,7 +9979,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1244785174
 Transform:
   m_ObjectHideFlags: 0
@@ -10766,22 +10766,14 @@ MonoBehaviour:
   episodeTimer: 0
   speedRewardWeight: 0.2
   waitPenaltyWeight: 0.1
-  conflictPenaltyWeight: 1.2
   congestionPenaltyWeight: 0.1
   carPassedRewardWeight: 0.5
-  unfinishedCarPenaltyWeight: 0.1
   maxInactivityTime: 20
-  NoAccidentReward: 10
-  angerPenaltyWeight: 0
-  peakAngerPenaltyWeight: 0
   angerReductionRewardWeight: 0.1
   inactivityPenaltyWeight: 0.2
-  stabilityRewardWeight: 0.8
   statsLogger: {fileID: 691899676}
   carSpawner: {fileID: 691899677}
   randomizeInitialLights: 1
-  randomGreenProbability: 0.5
-  preventInitialConflicts: 1
 --- !u!114 &1326906130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16156,22 +16148,14 @@ MonoBehaviour:
   episodeTimer: 0
   speedRewardWeight: 0.2
   waitPenaltyWeight: 0.1
-  conflictPenaltyWeight: 1.2
   congestionPenaltyWeight: 0.1
   carPassedRewardWeight: 0.5
-  unfinishedCarPenaltyWeight: 0.1
   maxInactivityTime: 20
-  NoAccidentReward: 10
-  angerPenaltyWeight: 0
-  peakAngerPenaltyWeight: 0
   angerReductionRewardWeight: 0.1
   inactivityPenaltyWeight: 0.2
-  stabilityRewardWeight: 0.8
   statsLogger: {fileID: 30752157}
   carSpawner: {fileID: 30752156}
   randomizeInitialLights: 1
-  randomGreenProbability: 0.5
-  preventInitialConflicts: 1
 --- !u!114 &2097227524
 MonoBehaviour:
   m_ObjectHideFlags: 0
