@@ -221,7 +221,7 @@ public class SimpleTrafficAgent : Agent
         float reward = CalculateReward();
         AddReward(reward);
         
-        Debug.Log($"Action: Config {chosenConfigIndex}, Reward: {reward:F3}, Cumulative: {GetCumulativeReward():F3}");
+       // Debug.Log($"Action: Config {chosenConfigIndex}, Reward: {reward:F3}, Cumulative: {GetCumulativeReward():F3}");
     }
 
     private bool CanChangeLights()

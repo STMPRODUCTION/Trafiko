@@ -9446,6 +9446,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1496143521}
+  - {fileID: 1379867013}
+  - {fileID: 1328139266}
+  - {fileID: 1522335314}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &706402774
@@ -15682,6 +15685,134 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   travelerLayerName: Traveler
   carTag: Car
+--- !u!1 &1328139265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1328139266}
+  - component: {fileID: 1328139269}
+  - component: {fileID: 1328139268}
+  - component: {fileID: 1328139267}
+  m_Layer: 0
+  m_Name: Agent3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1328139266
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328139265}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 90.2, y: 0, z: -315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 693735563}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1328139267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328139265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 100
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 09000000
+    VectorActionSize: 09000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 5022602860645237092, guid: 7cc4d841139bac04ea4429d20297888b, type: 3}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: TrafficLightBrain
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_DeterministicInference: 0
+  m_ObservableAttributeHandling: 0
+--- !u!114 &1328139268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328139265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 536f48821b9d09a428c222fa6c9394e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  lightN: {fileID: 678979985}
+  lightS: {fileID: 904454467}
+  lightE: {fileID: 1180071466}
+  lightV: {fileID: 1610844563}
+  lightNLeft: {fileID: 219284466}
+  lightSLeft: {fileID: 622516979}
+  lightELeft: {fileID: 875710523}
+  lightVLeft: {fileID: 1204115254}
+  intersectionCounter: {fileID: 1328139269}
+  decisionInterval: 3
+  maxEpisodeTime: 120
+  minLightDuration: 2
+  waitPenalty: 0.0075
+  congestionPenalty: 0.001
+  CarLeftRewardWeight: 0.005
+  timeScale: 1
+  inIntersectionReward: 0.004
+--- !u!114 &1328139269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328139265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0a523a0140635f43bbeedf06404f2a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  N_extreme_entrace: {fileID: 58696515}
+  N_centre_entrace: {fileID: 9558812}
+  N_extreme_exit: {fileID: 1538025273}
+  N_centre_exit: {fileID: 125726653}
+  S_extreme_entrace: {fileID: 1746814228}
+  S_centre_entrace: {fileID: 1367861602}
+  S_extreme_exit: {fileID: 2136930344}
+  S_centre_exit: {fileID: 406093384}
+  E_extreme_entrace: {fileID: 485071987}
+  E_centre_entrace: {fileID: 608494914}
+  E_extreme_exit: {fileID: 679761092}
+  E_centre_exit: {fileID: 546514538}
+  V_extreme_entrace: {fileID: 1256666599}
+  V_centre_entrace: {fileID: 1347104652}
+  V_extreme_exit: {fileID: 41199580}
+  V_centre_exit: {fileID: 335146739}
+  count: 0
+  avgTime: 0
 --- !u!1 &1337766022
 GameObject:
   m_ObjectHideFlags: 0
@@ -16427,6 +16558,134 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1375970981}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1379867012
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1379867013}
+  - component: {fileID: 1379867016}
+  - component: {fileID: 1379867015}
+  - component: {fileID: 1379867014}
+  m_Layer: 0
+  m_Name: Agent2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1379867013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379867012}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2, y: 0, z: -315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 693735563}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1379867014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379867012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 100
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 09000000
+    VectorActionSize: 09000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 5022602860645237092, guid: 7cc4d841139bac04ea4429d20297888b, type: 3}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: TrafficLightBrain
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_DeterministicInference: 0
+  m_ObservableAttributeHandling: 0
+--- !u!114 &1379867015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379867012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 536f48821b9d09a428c222fa6c9394e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  lightN: {fileID: 2042858894}
+  lightS: {fileID: 1225376211}
+  lightE: {fileID: 1205752074}
+  lightV: {fileID: 1539044783}
+  lightNLeft: {fileID: 901822293}
+  lightSLeft: {fileID: 949410277}
+  lightELeft: {fileID: 1405744646}
+  lightVLeft: {fileID: 559544713}
+  intersectionCounter: {fileID: 1379867016}
+  decisionInterval: 3
+  maxEpisodeTime: 120
+  minLightDuration: 2
+  waitPenalty: 0.0075
+  congestionPenalty: 0.001
+  CarLeftRewardWeight: 0.005
+  timeScale: 1
+  inIntersectionReward: 0.004
+--- !u!114 &1379867016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379867012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0a523a0140635f43bbeedf06404f2a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  N_extreme_entrace: {fileID: 1920097630}
+  N_centre_entrace: {fileID: 1165058481}
+  N_extreme_exit: {fileID: 1237644048}
+  N_centre_exit: {fileID: 2069816966}
+  S_extreme_entrace: {fileID: 1721895444}
+  S_centre_entrace: {fileID: 560663009}
+  S_extreme_exit: {fileID: 1315732538}
+  S_centre_exit: {fileID: 1746517115}
+  E_extreme_entrace: {fileID: 1791269570}
+  E_centre_entrace: {fileID: 83261523}
+  E_extreme_exit: {fileID: 1713495267}
+  E_centre_exit: {fileID: 1258390007}
+  V_extreme_entrace: {fileID: 2108333279}
+  V_centre_entrace: {fileID: 195955486}
+  V_extreme_exit: {fileID: 149360902}
+  V_centre_exit: {fileID: 1140734665}
+  count: 0
+  avgTime: 0
 --- !u!1 &1380993953
 GameObject:
   m_ObjectHideFlags: 0
@@ -17411,7 +17670,7 @@ GameObject:
   - component: {fileID: 1496143523}
   - component: {fileID: 1496143524}
   m_Layer: 0
-  m_Name: Agent
+  m_Name: Agent1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17493,7 +17752,7 @@ MonoBehaviour:
   waitPenalty: 0.0075
   congestionPenalty: 0.001
   CarLeftRewardWeight: 0.005
-  timeScale: 10
+  timeScale: 1
   inIntersectionReward: 0.004
 --- !u!114 &1496143524
 MonoBehaviour:
@@ -17517,7 +17776,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 7cc4d841139bac04ea4429d20297888b, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: TrafficLightBrain
@@ -17612,6 +17871,134 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1506950282}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1522335313
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1522335314}
+  - component: {fileID: 1522335317}
+  - component: {fileID: 1522335316}
+  - component: {fileID: 1522335315}
+  m_Layer: 0
+  m_Name: Agent4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1522335314
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522335313}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 417.2, y: 0, z: -315.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 693735563}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1522335315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522335313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 100
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 09000000
+    VectorActionSize: 09000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 5022602860645237092, guid: 7cc4d841139bac04ea4429d20297888b, type: 3}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: TrafficLightBrain
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_DeterministicInference: 0
+  m_ObservableAttributeHandling: 0
+--- !u!114 &1522335316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522335313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 536f48821b9d09a428c222fa6c9394e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  lightN: {fileID: 538322421}
+  lightS: {fileID: 706421736}
+  lightE: {fileID: 1123792377}
+  lightV: {fileID: 1690539132}
+  lightNLeft: {fileID: 35722452}
+  lightSLeft: {fileID: 1044043354}
+  lightELeft: {fileID: 503776040}
+  lightVLeft: {fileID: 1554470010}
+  intersectionCounter: {fileID: 1522335317}
+  decisionInterval: 3
+  maxEpisodeTime: 120
+  minLightDuration: 2
+  waitPenalty: 0.0075
+  congestionPenalty: 0.001
+  CarLeftRewardWeight: 0.005
+  timeScale: 1
+  inIntersectionReward: 0.004
+--- !u!114 &1522335317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522335313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0a523a0140635f43bbeedf06404f2a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  N_extreme_entrace: {fileID: 1001739558}
+  N_centre_entrace: {fileID: 57657118}
+  N_extreme_exit: {fileID: 286045956}
+  N_centre_exit: {fileID: 1764810799}
+  S_extreme_entrace: {fileID: 951267805}
+  S_centre_entrace: {fileID: 170343493}
+  S_extreme_exit: {fileID: 394506687}
+  S_centre_exit: {fileID: 1349509414}
+  E_extreme_entrace: {fileID: 1458351942}
+  E_centre_entrace: {fileID: 572741675}
+  E_extreme_exit: {fileID: 745994462}
+  E_centre_exit: {fileID: 645040796}
+  V_extreme_entrace: {fileID: 290872992}
+  V_centre_entrace: {fileID: 818608372}
+  V_extreme_exit: {fileID: 1141994392}
+  V_centre_exit: {fileID: 54493060}
+  count: 0
+  avgTime: 0
 --- !u!1 &1526432770
 GameObject:
   m_ObjectHideFlags: 0

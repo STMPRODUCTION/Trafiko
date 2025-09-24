@@ -19,7 +19,7 @@ public class TravelerCounter : MonoBehaviour
     
     // Cleanup timing
     private float lastCleanupTime = 0f;
-    private const float CLEANUP_INTERVAL = 119.5f; // Clean up every 5 seconds (adjust as needed)
+    private const float CLEANUP_INTERVAL = 119.5f;
 
     // 🔹 Events
     public event Action<TravelerCounter, GameObject> OnCarEntered;
