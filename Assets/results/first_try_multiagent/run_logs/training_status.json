@@ -1,0 +1,29 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 757,
+                "file_path": "results\\first_try_multiagent\\TrafficLightBrain\\TrafficLightBrain-757.onnx",
+                "reward": -12.857537542070661,
+                "creation_time": 1758556476.0282123,
+                "auxillary_file_paths": [
+                    "results\\first_try_multiagent\\TrafficLightBrain\\TrafficLightBrain-757.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 757,
+            "file_path": "results\\first_try_multiagent\\TrafficLightBrain.onnx",
+            "reward": -12.857537542070661,
+            "creation_time": 1758556476.0282123,
+            "auxillary_file_paths": [
+                "results\\first_try_multiagent\\TrafficLightBrain\\TrafficLightBrain-757.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cu128"
+    }
+}

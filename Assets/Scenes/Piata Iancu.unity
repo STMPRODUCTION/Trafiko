@@ -8540,8 +8540,8 @@ Transform:
   m_Children:
   - {fileID: 1541779425}
   - {fileID: 1896863385}
-  - {fileID: 1711691557}
   - {fileID: 1325645322}
+  - {fileID: 1711691557}
   - {fileID: 307278461}
   - {fileID: 977648507}
   - {fileID: 1225524255}
@@ -17408,8 +17408,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1496143521}
   - component: {fileID: 1496143522}
-  - component: {fileID: 1496143524}
   - component: {fileID: 1496143523}
+  - component: {fileID: 1496143524}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -17426,7 +17426,7 @@ Transform:
   m_GameObject: {fileID: 1496143520}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.8, y: 4.2, z: 453.6}
+  m_LocalPosition: {x: -0.03, y: 0, z: 453.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17488,13 +17488,13 @@ MonoBehaviour:
   lightVLeft: {fileID: 504852164}
   intersectionCounter: {fileID: 1496143522}
   decisionInterval: 3
-  maxEpisodeTime: 300
+  maxEpisodeTime: 120
   minLightDuration: 2
-  throughputReward: 1
-  waitPenalty: 0.5
-  congestionPenalty: 0.3
-  lightChangesPenalty: 0.1
-  safetyReward: 0.2
+  waitPenalty: 0.0075
+  congestionPenalty: 0.001
+  CarLeftRewardWeight: 0.005
+  timeScale: 10
+  inIntersectionReward: 0.004
 --- !u!114 &1496143524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17508,19 +17508,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 100
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 01000000
-    VectorActionSize: 01000000
+      BranchSizes: 09000000
+    VectorActionSize: 09000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: TrafficMultiAgent
+  m_BehaviorName: TrafficLightBrain
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -20842,7 +20842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 3932338759739853225, guid: de499d2260da6084793cd9cd84828b5f, type: 3}
-  spawnInterval: 2
+  spawnInterval: 1
   spawnPoint: {fileID: 1791490970}
 --- !u!1 &1796048125
 GameObject:
@@ -23691,8 +23691,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 44
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -23716,8 +23716,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046931302}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.11685457, y: 0.87898505, z: -0.27765048, w: -0.3696492}
+  m_LocalPosition: {x: 65.44225, y: 64.855064, z: 517.35376}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

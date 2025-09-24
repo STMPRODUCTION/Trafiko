@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 20
-  stopDistance: 3
+  stopDistance: 5
   trafficLightTag: TrafficLight
 --- !u!33 &3632842364245944090
 MeshFilter:

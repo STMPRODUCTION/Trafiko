@@ -3,7 +3,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 
-public class TrafficLightMultiAgent : Agent
+public class SimpleTrafficAgent : Agent
 {
     [Header("Traffic Light References")]
     [SerializeField] private TrafficLight lightN;
@@ -24,11 +24,14 @@ public class TrafficLightMultiAgent : Agent
     [SerializeField] private float minLightDuration = 2f; // Minimum time a light must stay in one state
 
     [Header("Reward Weights")]
-    [SerializeField] private float throughputReward = 1.0f;
     [SerializeField] private float waitPenalty = 0.5f;
     [SerializeField] private float congestionPenalty = 0.3f;
-    [SerializeField] private float lightChangesPenalty = 0.1f;
-    [SerializeField] private float safetyReward = 0.2f;
+        [SerializeField] private float CarLeftRewardWeight = 0.1f;
+
+
+    [Header("Time Scale Control")]
+    [Range(1, 20)]
+    public int timeScale = 1;
 
     // Internal state tracking
     private float timer = 0f;
@@ -42,7 +45,13 @@ public class TrafficLightMultiAgent : Agent
 
     private void Awake()
     {
+        intersectionCounter.OnCarLeft += CarLeftReward;
         InitializeTrafficConfigurations();
+    }
+    private int CarsLeft = 0;
+    public void CarLeftReward()
+    {
+        CarsLeft++;
     }
 
     private void InitializeTrafficConfigurations()
@@ -82,11 +91,19 @@ public class TrafficLightMultiAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        GameObject[] cars = GameObject.FindGameObjectsWithTag("Car");
+        foreach (GameObject car in cars)
+        {
+            if (car != null)
+            {
+                Destroy(car);
+            }
+        }
+
         timer = 0f;
         episodeTimer = 0f;
         currentConfigurationIndex = 0;
         
-        // Reset light state durations
         for (int i = 0; i < lightStateDurations.Length; i++)
         {
             lightStateDurations[i] = 0f;
@@ -100,6 +117,9 @@ public class TrafficLightMultiAgent : Agent
 
     private void Update()
     {
+        // Apply time scale control
+        Time.timeScale = timeScale;
+        
         timer += Time.deltaTime;
         episodeTimer += Time.deltaTime;
         
@@ -109,6 +129,7 @@ public class TrafficLightMultiAgent : Agent
         // Request decision at intervals
         if (timer >= decisionInterval)
         {
+            //Debug.Log("decided");
             RequestDecision();
             timer = 0f;
         }
@@ -143,33 +164,26 @@ public class TrafficLightMultiAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        if (intersectionCounter == null)
-        {
-            // Add zero observations if counter is missing
-            for (int i = 0; i < 12; i++) // 8 lane counts + 4 other metrics
-            {
-                sensor.AddObservation(0f);
-            }
-        }
-        else
-        {
-            // Car counts for each entrance (8 entrances total)
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(0)); // N extreme
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(1)); // N centre
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(2)); // S extreme
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(3)); // S centre
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(4)); // E extreme
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(5)); // E centre
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(6)); // V extreme
-            sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(7)); // V centre
-            
-            // Overall intersection metrics
-            sensor.AddObservation(intersectionCounter.GetCarsWaitingInIntersection());
-            sensor.AddObservation(intersectionCounter.GetCarsInIntersection());
-            sensor.AddObservation(intersectionCounter.avgTime / 30f); // Normalized average wait time
-            sensor.AddObservation(intersectionCounter.count / 20f); // Normalized total count
-        }
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(0)); // N extreme
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(1)); // N centre
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(2)); // S extreme
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(3)); // S centre
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(4)); // E extreme
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(5)); // E centre
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(6)); // V extreme
+        sensor.AddObservation(intersectionCounter.GetCarsAtEntrance(7)); // V centre
 
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(0)); // N extreme
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(1)); // N centre
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(2)); // S extreme
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(3)); // S centre
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(4)); // E extreme
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(5)); // E centre
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(6)); // V extreme
+        sensor.AddObservation(intersectionCounter.GetWaitTimeAtEntrance(7)); // V centre
+
+        sensor.AddObservation(intersectionCounter.GetCarsWaitingInIntersection());
+        sensor.AddObservation(intersectionCounter.GetCarsInIntersection());
         // Current light states (8 lights)
         sensor.AddObservation(lightN.isGreen ? 1f : 0f);
         sensor.AddObservation(lightS.isGreen ? 1f : 0f);
@@ -185,15 +199,10 @@ public class TrafficLightMultiAgent : Agent
         {
             sensor.AddObservation(lightStateDurations[i] / decisionInterval);
         }
-
-        // Current configuration index (normalized)
-        sensor.AddObservation((float)currentConfigurationIndex / trafficConfigurations.Length);
-        
-        // Time-based observations
+        sensor.AddObservation(currentConfigurationIndex);
         sensor.AddObservation(timer / decisionInterval);
-        sensor.AddObservation(episodeTimer / maxEpisodeTime);
-    }
 
+    }
     public override void OnActionReceived(ActionBuffers actions)
     {
         // Agent chooses from predefined safe configurations
@@ -227,65 +236,31 @@ public class TrafficLightMultiAgent : Agent
         }
         return true;
     }
-
+    public float inIntersectionReward = 0f;
     private float CalculateReward()
     {
         float reward = 0f;
+        int carsAtEntrance = intersectionCounter.GetCarsWaitingInIntersection();       
+        reward -= carsAtEntrance * congestionPenalty;
 
-        if (intersectionCounter == null) return reward;
+        float totalWait = intersectionCounter.GetTotalWaitingTime();
+        reward -= totalWait * waitPenalty;
 
-        // Throughput reward: fewer cars waiting is better
-        int totalWaiting = intersectionCounter.GetCarsWaitingInIntersection();
-        float throughputScore = Mathf.Max(0, 20 - totalWaiting) / 20f; // Normalized 0-1
-        reward += throughputScore * throughputReward;
-
-        // Wait time penalty: shorter average wait time is better
-        float avgWaitTime = intersectionCounter.avgTime;
-        float waitPenaltyScore = Mathf.Clamp01(avgWaitTime / 30f); // Normalized 0-1
-        reward -= waitPenaltyScore * waitPenalty;
-
-        // Congestion penalty: heavily penalize lanes with many cars
-        for (int i = 0; i < 8; i++)
-        {
-            int carsAtEntrance = intersectionCounter.GetCarsAtEntrance(i);
-            if (carsAtEntrance > 5)
-            {
-                reward -= (carsAtEntrance - 5) * congestionPenalty * 0.1f;
-            }
-        }
-
-        // Safety reward: cars successfully moving through intersection
-        int carsInIntersection = intersectionCounter.GetCarsInIntersection();
-        if (carsInIntersection > 0 && currentConfigurationIndex != 0)
-        {
-            reward += safetyReward;
-        }
-
-        // Small penalty for using all-red configuration (should be transitional)
         if (currentConfigurationIndex == 0)
         {
-            reward -= 0.05f;
+            reward -= 0.01f;
         }
-
-        // Penalty for unnecessary light changes (encourage stability)
-        bool hasActiveGreen = false;
-        for (int i = 0; i < 8; i++)
+        reward += CarsLeft * CarLeftRewardWeight;
+        reward += intersectionCounter.GetCarsInIntersection() * inIntersectionReward;
+        if (currentConfigurationIndex == 0)
         {
-            if (previousLightStates[i])
-            {
-                hasActiveGreen = true;
-                break;
-            }
+            reward -= 0.01f;
         }
-        
-        if (hasActiveGreen && totalWaiting == 0)
-        {
-            reward -= lightChangesPenalty;
-        }
-
+        Debug.Log(CarsLeft);
+        CarsLeft = 0;
         return reward;
+        
     }
-
     private void SetTrafficConfiguration(int configIndex)
     {
         if (configIndex < 0 || configIndex >= trafficConfigurations.Length)
@@ -315,9 +290,6 @@ public class TrafficLightMultiAgent : Agent
         var discreteActions = actionsOut.DiscreteActions;
         discreteActions[0] = heuristicAction;
     }
-
-    // Public methods for external monitoring
-    public int GetCurrentConfiguration() => currentConfigurationIndex;
-    public float GetEpisodeProgress() => episodeTimer / maxEpisodeTime;
-    public int GetTotalWaitingCars() => intersectionCounter?.GetCarsWaitingInIntersection() ?? 0;
 }
+
+

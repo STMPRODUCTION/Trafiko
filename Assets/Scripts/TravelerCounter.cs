@@ -10,16 +10,26 @@ public class TravelerCounter : MonoBehaviour
 
     private int travelerLayer;
     private Dictionary<GameObject, float> travelerEntryTimes = new Dictionary<GameObject, float>();
+    private float peakWaitTime = 0f;
+
+    // Cached values for performance
+    private int cachedCarCount = 0;
+    private float cachedAvgWaitTime = 0f;
+    private bool needsRecalculation = false;
+    
+    // Cleanup timing
+    private float lastCleanupTime = 0f;
+    private const float CLEANUP_INTERVAL = 119.5f; // Clean up every 5 seconds (adjust as needed)
 
     // 🔹 Events
     public event Action<TravelerCounter, GameObject> OnCarEntered;
     public event Action<TravelerCounter, GameObject> OnCarExited;
 
-
     private void Start()
     {
         travelerLayer = LayerMask.NameToLayer(travelerLayerName);
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (IsTravelerOrCar(other.gameObject))
@@ -27,7 +37,7 @@ public class TravelerCounter : MonoBehaviour
             if (!travelerEntryTimes.ContainsKey(other.gameObject))
             {
                 travelerEntryTimes[other.gameObject] = Time.time;
-                Debug.Log($"[{Time.time:F2}] {other.name} entered {gameObject.name}.");
+                needsRecalculation = true;
 
                 // 🔹 Fire event if it's a Car
                 if (other.CompareTag(carTag))
@@ -40,19 +50,23 @@ public class TravelerCounter : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (IsTravelerOrCar(other.gameObject))
+        if (IsTravelerOrCar(other.gameObject) && travelerEntryTimes.TryGetValue(other.gameObject, out float entryTime))
         {
-            if (travelerEntryTimes.TryGetValue(other.gameObject, out float entryTime))
+            float duration = Time.time - entryTime;
+            
+            // 🔹 Update peak wait time if this duration is higher
+            if (duration > peakWaitTime)
             {
-                float duration = Time.time - entryTime;
-                Debug.Log($"[{Time.time:F2}] {other.name} exited {gameObject.name} after {duration:F2}s.");
-                travelerEntryTimes.Remove(other.gameObject);
+                peakWaitTime = duration;
+            }
+            
+            travelerEntryTimes.Remove(other.gameObject);
+            needsRecalculation = true;
 
-                // 🔹 Fire event if it's a Car
-                if (other.CompareTag(carTag))
-                {
-                    OnCarExited?.Invoke(this, other.gameObject);
-                }
+            // 🔹 Fire event if it's a Car
+            if (other.CompareTag(carTag))
+            {
+                OnCarExited?.Invoke(this, other.gameObject);
             }
         }
     }
@@ -64,6 +78,7 @@ public class TravelerCounter : MonoBehaviour
 
     public int GetTravelerCount()
     {
+        CleanupDestroyedObjects();
         return travelerEntryTimes.Count;
     }
 
@@ -76,35 +91,117 @@ public class TravelerCounter : MonoBehaviour
         return 0f;
     }
 
-    public float GetAverageCarWaitTime()
+    public float GetTotalCarWaitTime()
     {
-        int carCount = 0;
-        float totalTime = 0f;
-
-        foreach (var kvp in travelerEntryTimes)
+        if (needsRecalculation)
         {
-            if (kvp.Key.CompareTag(carTag))
-            {
-                carCount++;
-                totalTime += Time.time - kvp.Value;
-            }
+            RecalculateCarStats();
         }
-
-        return carCount == 0 ? 0f : totalTime / carCount;
+        return cachedAvgWaitTime;
     }
 
     public int GetCarCount()
     {
-        int count = 0;
+        if (needsRecalculation)
+        {
+            RecalculateCarStats();
+        }
+        return cachedCarCount;
+    }
+
+    private void RecalculateCarStats()
+    {
+        int carCount = 0;
+        float totalTime = 0f;
+        float currentTime = Time.time;
+
+        // Use foreach with KeyValuePair to avoid allocations
         foreach (var kvp in travelerEntryTimes)
         {
-            if (kvp.Key.CompareTag(carTag)) count++;
+            if (kvp.Key == null) continue;
+
+            if (kvp.Key.CompareTag(carTag))
+            {
+                carCount++;
+                totalTime += currentTime - kvp.Value;
+            }
         }
-        return count;
+
+        cachedCarCount = carCount;
+        cachedAvgWaitTime = totalTime;
+        needsRecalculation = false;
+
+        // Clean up destroyed objects only when enough time has passed
+        if (currentTime - lastCleanupTime >= CLEANUP_INTERVAL)
+        {
+            CleanupDestroyedObjects();
+            lastCleanupTime = currentTime;
+        }
+    }
+
+    private void CleanupDestroyedObjects()
+    {
+        // Create a temporary list to store keys to remove
+        var keysToRemove = new List<GameObject>();
+
+        foreach (var kvp in travelerEntryTimes)
+        {
+            if (kvp.Key == null)
+            {
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+
+        // Remove the null keys
+        foreach (var key in keysToRemove)
+        {
+            travelerEntryTimes.Remove(key);
+        }
+
+        if (keysToRemove.Count > 0)
+        {
+            needsRecalculation = true;
+        }
     }
 
     public List<GameObject> GetActiveTravelers()
     {
+        CleanupDestroyedObjects();
         return new List<GameObject>(travelerEntryTimes.Keys);
+    }
+
+    /// <summary>
+    /// Returns the peak (maximum) waiting time recorded since the start of the session.
+    /// This includes both completed wait times and current ongoing wait times.
+    /// </summary>
+    /// <returns>The highest waiting time in seconds</returns>
+    public float GetPeakWaitingTime()
+    {
+        float currentPeak = peakWaitTime;
+        float currentTime = Time.time;
+        
+        // Check current active travelers for longer wait times
+        foreach (var kvp in travelerEntryTimes)
+        {
+            if (kvp.Key != null)
+            {
+                float currentWaitTime = currentTime - kvp.Value;
+                if (currentWaitTime > currentPeak)
+                {
+                    currentPeak = currentWaitTime;
+                }
+            }
+        }
+        
+        return currentPeak;
+    }
+
+    /// <summary>
+    /// Resets the peak waiting time counter to zero.
+    /// Useful for starting fresh measurements.
+    /// </summary>
+    public void ResetPeakWaitingTime()
+    {
+        peakWaitTime = 0f;
     }
 }

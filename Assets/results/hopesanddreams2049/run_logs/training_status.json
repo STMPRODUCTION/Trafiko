@@ -1,0 +1,38 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 14960,
+                "file_path": "results\\hopesanddreams2049\\TrafficLightBrain\\TrafficLightBrain-14960.onnx",
+                "reward": -95.78370208740235,
+                "creation_time": 1758663550.2711914,
+                "auxillary_file_paths": [
+                    "results\\hopesanddreams2049\\TrafficLightBrain\\TrafficLightBrain-14960.pt"
+                ]
+            },
+            {
+                "steps": 17160,
+                "file_path": "results\\hopesanddreams2049\\TrafficLightBrain\\TrafficLightBrain-17160.onnx",
+                "reward": -96.04485907921425,
+                "creation_time": 1758663949.6952531,
+                "auxillary_file_paths": [
+                    "results\\hopesanddreams2049\\TrafficLightBrain\\TrafficLightBrain-17160.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 17160,
+            "file_path": "results\\hopesanddreams2049\\TrafficLightBrain.onnx",
+            "reward": -96.04485907921425,
+            "creation_time": 1758663949.6952531,
+            "auxillary_file_paths": [
+                "results\\hopesanddreams2049\\TrafficLightBrain\\TrafficLightBrain-17160.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cu128"
+    }
+}

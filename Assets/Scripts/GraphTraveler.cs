@@ -103,7 +103,7 @@ public class GraphTraveler : MonoBehaviour
                 string randomFile = files[UnityEngine.Random.Range(0, files.Length)];
                 string json = File.ReadAllText(randomFile);
                 loadedPath = JsonUtility.FromJson<PathData>(json);
-                Debug.Log($"Loaded random path: {Path.GetFileName(randomFile)} with {loadedPath.points.Count} points.");
+                //Debug.Log($"Loaded random path: {Path.GetFileName(randomFile)} with {loadedPath.points.Count} points.");
             }
             else
             {
