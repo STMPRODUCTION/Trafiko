@@ -17,6 +17,8 @@ public class SimpleTrafficAgent : Agent
 
     [Header("Intersection Counter")]
     [SerializeField] private IntersectionCounter intersectionCounter;
+    [SerializeField] private IntersectionCounter intersectionCounter_nb;
+    [SerializeField] private IntersectionCounter intersectionCounter_nb2;
 
     [Header("Agent Parameters")]
     [SerializeField] private float decisionInterval = 3f;
@@ -26,9 +28,17 @@ public class SimpleTrafficAgent : Agent
     [Header("Reward Weights")]
     [SerializeField] private float waitPenalty = 0.5f;
     [SerializeField] private float congestionPenalty = 0.3f;
-        [SerializeField] private float CarLeftRewardWeight = 0.1f;
+    [SerializeField] private float CarLeftRewardWeight = 0.1f;
+    [SerializeField] private float stabilityReward = 0.01f;
 
-
+    public float inIntersectionReward = 0f;
+    public float waitPenalty_nb = 0f;
+    public float congestionPenalty_nb = 0f;
+    public float waitPenalty_nb2 = 0f;
+    public float congestionPenalty_nb2 = 0f;
+    public int nb_id;
+    public int nb_id2;
+    public float emptyLanePenalty = 0.01f;
     [Header("Time Scale Control")]
     [Range(1, 20)]
     public int timeScale = 1;
@@ -37,6 +47,7 @@ public class SimpleTrafficAgent : Agent
     private float timer = 0f;
     private float episodeTimer = 0f;
     private int currentConfigurationIndex = 0;
+    private int previousConfigurationIndex = 0;
     private float[] lightStateDurations = new float[8]; // Track how long each light has been in current state
     private bool[] previousLightStates = new bool[8];
     
@@ -103,6 +114,7 @@ public class SimpleTrafficAgent : Agent
         timer = 0f;
         episodeTimer = 0f;
         currentConfigurationIndex = 0;
+        previousConfigurationIndex = 0;
         
         for (int i = 0; i < lightStateDurations.Length; i++)
         {
@@ -184,6 +196,8 @@ public class SimpleTrafficAgent : Agent
 
         sensor.AddObservation(intersectionCounter.GetCarsWaitingInIntersection());
         sensor.AddObservation(intersectionCounter.GetCarsInIntersection());
+
+        
         // Current light states (8 lights)
         sensor.AddObservation(lightN.isGreen ? 1f : 0f);
         sensor.AddObservation(lightS.isGreen ? 1f : 0f);
@@ -202,6 +216,20 @@ public class SimpleTrafficAgent : Agent
         sensor.AddObservation(currentConfigurationIndex);
         sensor.AddObservation(timer / decisionInterval);
 
+        if (intersectionCounter_nb != null)
+        {
+            sensor.AddObservation(intersectionCounter_nb.GetCarsWaitingInIntersection());
+            sensor.AddObservation(intersectionCounter_nb.GetCarsInIntersection());
+            sensor.AddObservation(intersectionCounter_nb.GetCarsAtExit(nb_id));
+            sensor.AddObservation(intersectionCounter_nb.GetCarsAtExit(nb_id+1));
+        }
+        if (intersectionCounter_nb2 != null)
+        {
+            sensor.AddObservation(intersectionCounter_nb2.GetCarsWaitingInIntersection());
+            sensor.AddObservation(intersectionCounter_nb2.GetCarsInIntersection());
+            sensor.AddObservation(intersectionCounter_nb2.GetCarsAtExit(nb_id2));
+            sensor.AddObservation(intersectionCounter_nb2.GetCarsAtExit(nb_id2+1));
+        }
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -226,20 +254,13 @@ public class SimpleTrafficAgent : Agent
 
     private bool CanChangeLights()
     {
-        // Check if minimum duration has passed for any currently green lights
-        for (int i = 0; i < lightStateDurations.Length; i++)
-        {
-            if (previousLightStates[i] && lightStateDurations[i] < minLightDuration)
-            {
-                return false;
-            }
-        }
         return true;
     }
-    public float inIntersectionReward = 0f;
     private float CalculateReward()
     {
         float reward = 0f;
+
+        // 🔹 Base penalties and rewards
         int carsAtEntrance = intersectionCounter.GetCarsWaitingInIntersection();       
         reward -= carsAtEntrance * congestionPenalty;
 
@@ -248,19 +269,55 @@ public class SimpleTrafficAgent : Agent
 
         if (currentConfigurationIndex == 0)
         {
-            reward -= 0.01f;
+            reward -= 0.005f; // all-red penalty
         }
-        reward += CarsLeft * CarLeftRewardWeight;
-        reward += intersectionCounter.GetCarsInIntersection() * inIntersectionReward;
-        if (currentConfigurationIndex == 0)
+        if(currentConfigurationIndex != previousConfigurationIndex)
         {
-            reward -= 0.01f;
+            reward -= stabilityReward;
         }
+
+        reward += CarsLeft * CarLeftRewardWeight;
+        reward += intersectionCounter.GetCarsInIntersection() * inIntersectionReward;  
+
+        // 🔹 Neighbour intersections
+        if (intersectionCounter_nb != null)
+        {
+            int carsAtEntrance_nb = intersectionCounter_nb.GetCarsWaitingInIntersection();  
+            reward -= carsAtEntrance_nb * congestionPenalty_nb;
+
+            float totalWait_nb = intersectionCounter_nb.GetTotalWaitingTime();
+            reward -= totalWait_nb * waitPenalty_nb;
+        }
+
+        if (intersectionCounter_nb2 != null)
+        {  
+            int carsAtEntrance_nb2 = intersectionCounter_nb2.GetCarsWaitingInIntersection();  
+            reward -= carsAtEntrance_nb2 * congestionPenalty_nb2;
+
+            float totalWait_nb2 = intersectionCounter_nb2.GetTotalWaitingTime();
+            reward -= totalWait_nb2 * waitPenalty_nb2;
+        }
+
+        // 🔹 Penalty for green lights with no cars
+        bool[] config = trafficConfigurations[currentConfigurationIndex];
+        for (int i = 0; i < config.Length; i++)
+        {
+            if (config[i]) // this lane is green
+            {
+                int laneCars = intersectionCounter.GetCarsAtEntrance(i);
+                if (laneCars == 0)
+                {
+                    reward -= emptyLanePenalty; // penalty for wasting green on empty lane
+                }
+            }
+        }
+
         Debug.Log(CarsLeft);
         CarsLeft = 0;
+
         return reward;
-        
     }
+
     private void SetTrafficConfiguration(int configIndex)
     {
         if (configIndex < 0 || configIndex >= trafficConfigurations.Length)
@@ -268,7 +325,7 @@ public class SimpleTrafficAgent : Agent
             Debug.LogWarning($"Invalid configuration index: {configIndex}. Using all-red.");
             configIndex = 0;
         }
-        
+        previousConfigurationIndex = currentConfigurationIndex;
         currentConfigurationIndex = configIndex;
         bool[] config = trafficConfigurations[configIndex];
         

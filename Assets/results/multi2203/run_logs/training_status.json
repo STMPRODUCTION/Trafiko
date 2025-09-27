@@ -1,0 +1,47 @@
+{
+    "TrafficLightBrain": {
+        "checkpoints": [
+            {
+                "steps": 14980,
+                "file_path": "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-14980.onnx",
+                "reward": -6.014353647828102,
+                "creation_time": 1758830271.9537632,
+                "auxillary_file_paths": [
+                    "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-14980.pt"
+                ]
+            },
+            {
+                "steps": 29990,
+                "file_path": "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-29990.onnx",
+                "reward": 44.577864265441896,
+                "creation_time": 1758831609.3173418,
+                "auxillary_file_paths": [
+                    "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-29990.pt"
+                ]
+            },
+            {
+                "steps": 39076,
+                "file_path": "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-39076.onnx",
+                "reward": 66.0304460644722,
+                "creation_time": 1758832480.685201,
+                "auxillary_file_paths": [
+                    "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-39076.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 39076,
+            "file_path": "results\\multi2203\\TrafficLightBrain.onnx",
+            "reward": 66.0304460644722,
+            "creation_time": 1758832480.685201,
+            "auxillary_file_paths": [
+                "results\\multi2203\\TrafficLightBrain\\TrafficLightBrain-39076.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.7.1+cu128"
+    }
+}

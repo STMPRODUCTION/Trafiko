@@ -148,6 +148,14 @@ public class IntersectionCounter : MonoBehaviour
         return entrances[id].GetCarCount();
     }
 
+    public int GetCarsAtExit(int id)
+    {
+        if (id < 0 || id >= entrances.Length || entrances[id] == null)
+            return 0;
+
+        return exits[id].GetCarCount();
+    }
+
     public float GetWaitTimeAtEntrance(int id)
     {
         if (id < 0 || id >= entrances.Length || entrances[id] == null)
